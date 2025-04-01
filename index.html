@@ -50,7 +50,6 @@
       40%, 80% { text-shadow: 2px 0 4px #00ff00; }
     }
 
-    /* CRT Flicker */
     #redirectOverlay::after {
       content: "";
       position: absolute;
@@ -75,6 +74,10 @@
 </head>
 <body>
 
+  <!-- ✨ HIDDEN SOURCE CLUE -->
+  <!-- vault hint: control the shift of history -->
+  <!-- try key combo -->
+
   <!-- SOUND FX -->
   <audio id="bootSound" src="sounds/boot.mp3" preload="auto"></audio>
   <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
@@ -92,6 +95,13 @@
 
   <div class="terminal-box">
     <p>Use the tabs above to explore issues and lore. This is the main zone. Expect more soon.</p>
+
+    <!-- 🧩 Visual Puzzle Clue -->
+    <div style="margin-top: 60px; color: #00ff00; font-family:monospace; font-size:14px;">
+      >> access method required  
+      <br>
+      <span style="opacity:0.6;">// hint: control the shift of history</span>
+    </div>
   </div>
 
   <footer>
@@ -113,6 +123,11 @@
       const typeSound = document.getElementById('typeSound');
       if (bootSound) bootSound.play().catch(() => {});
 
+      // 🖥 Console Clue
+      console.log("%c>> Terminal locked. Access required.", "color: #00ff00; font-family: monospace");
+      console.log("%c// Hint: Control. Shift. History...", "color: #00ff00; font-family: monospace");
+
+      // Key Combo Unlock
       document.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.shiftKey && (e.key === 'h' || e.key === 'H')) {
           const overlay = document.getElementById('redirectOverlay');
