@@ -75,6 +75,17 @@
       100% { text-shadow: 0 0 1px #00ff00; }
     }
 
+    nav a {
+      color: #00ff00;
+      text-decoration: none;
+      margin: 0 20px;
+      cursor: pointer;
+    }
+
+    nav a:hover {
+      text-shadow: 0 0 10px #00ff00;
+    }
+
     .back-home {
       display: inline-block;
       margin-top: 40px;
@@ -117,10 +128,43 @@
       color: #00ff00;
       text-decoration: none;
       font-size: 12px;
+      cursor: pointer;
     }
 
     #accessNodeLink:hover {
       opacity: 1;
+    }
+
+    #terminalOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    #terminalOverlay pre {
+      text-align: left;
+      width: 80%;
+      max-width: 600px;
+    }
+
+    #progressBar {
+      border: 1px solid #00ff00;
+      height: 20px;
+      margin-top: 10px;
+    }
+
+    #barFill {
+      width: 0%;
+      height: 100%;
+      background: #00ff00;
     }
   </style>
 </head>
@@ -129,13 +173,9 @@
   <canvas id="matrixCanvas"></canvas>
 
   <!-- Terminal Loader -->
-  <div id="terminalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:#00ff00; font-family:monospace; z-index:9999; justify-content:center; align-items:center; flex-direction:column;">
-    <div style="text-align:left; width:80%; max-width:600px;">
-      <pre id="terminalText">[ booting access node... ]</pre>
-      <div id="progressBar" style="border:1px solid #00ff00; height:20px; margin-top:10px;">
-        <div id="barFill" style="width:0%; height:100%; background:#00ff00;"></div>
-      </div>
-    </div>
+  <div id="terminalOverlay">
+    <pre id="terminalText">[ booting access node... ]</pre>
+    <div id="progressBar"><div id="barFill"></div></div>
   </div>
 
   <!-- Audio -->
@@ -144,7 +184,12 @@
 
   <h1>> Hidden Email Puzzle</h1>
 
-  <!-- Puzzle -->
+  <nav>
+    <a onclick="navigateWithLoader('index.html', ['[ navigating to mainframe... ]','[ PASSWORD: karatechop ]'])">Home</a>
+    <a onclick="navigateWithLoader('comics.html', ['[ loading comic files... ]','[ PASSWORD: rebellion ]'])">Comics</a>
+    <a onclick="navigateWithLoader('about.html', ['[ routing legacy path... ]','[ PASSWORD: legacyaccess ]'])">About</a>
+  </nav>
+
   <div class="puzzle">
     <h2>> Solve to Unlock the Email Signup</h2>
     <p>Riddle: "I'm electronic, I'm essential. I'm known as snail mail's high-tech sibling."</p>
@@ -155,7 +200,6 @@
     <button onclick="checkPuzzle()">Unlock</button>
   </div>
 
-  <!-- Signup Form -->
   <div class="signup-form" id="signupForm">
     <h2>> Newsletter / Email List</h2>
     <p>Nice work! Enter your info below to join the list:</p>
@@ -170,8 +214,7 @@
     </form>
   </div>
 
-  <!-- Back to Home -->
-  <a class="back-home" href="index.html">← Back to Home</a>
+  <a class="back-home" onclick="navigateWithLoader('index.html', ['[ redirecting to HQ... ]','[ PASSWORD: karatechop ]'])">← Back to Home</a>
 
   <!-- Footer Logo -->
   <div class="logo-footer">
@@ -180,7 +223,7 @@
 
   <!-- Hidden Access Node -->
   <div id="accessNodeLink">
-    <a href="#">[ access node ]</a>
+    <a onclick="navigateWithLoader('puzzle.html', ['[ reloading riddles... ]','[ PASSWORD: enemy ]'])">[ access node ]</a>
   </div>
 
   <script>
@@ -188,7 +231,6 @@
     const ctx = canvas.getContext("2d");
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
-
     const letters = "01";
     const fontSize = 16;
     const columns = canvas.width / fontSize;
@@ -210,7 +252,6 @@
     }
 
     setInterval(drawMatrix, 50);
-
     window.onresize = () => {
       canvas.height = window.innerHeight;
       canvas.width = window.innerWidth;
@@ -228,13 +269,45 @@
         const typeSound = document.getElementById('typeSound');
         if (typeSound) typeSound.play().catch(() => {});
         document.getElementById('signupForm').style.display = 'block';
-        alert("Correct passcode! Signup form unlocked.");
+        alert("✅ Correct passcode! Signup form unlocked.");
       } else {
         alert("❌ Wrong passcode. Try again!");
       }
     }
 
-    // Ctrl+Shift+H → Secret Loader
+    function navigateWithLoader(destination, messages) {
+      const overlay = document.getElementById("terminalOverlay");
+      const terminalText = document.getElementById("terminalText");
+      const barFill = document.getElementById("barFill");
+      const typeSound = document.getElementById("typeSound");
+
+      if (typeSound) typeSound.play().catch(() => {});
+      overlay.style.display = "flex";
+      terminalText.textContent = "[ accessing terminal... ]";
+
+      let msgIndex = 0;
+      const msgInterval = setInterval(() => {
+        if (msgIndex < messages.length) {
+          terminalText.textContent += "\n" + messages[msgIndex];
+          msgIndex++;
+        }
+      }, 800);
+
+      let progress = 0;
+      const barInterval = setInterval(() => {
+        progress += 2;
+        barFill.style.width = progress + "%";
+        if (progress >= 100) {
+          clearInterval(barInterval);
+          clearInterval(msgInterval);
+          setTimeout(() => {
+            window.location.href = destination;
+          }, 500);
+        }
+      }, 100);
+    }
+
+    // Ctrl+Shift+H
     let loadingTriggered = false;
     document.addEventListener("keydown", function (e) {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "h" && !loadingTriggered) {
@@ -286,25 +359,11 @@
         }, 100);
       }
 
-      // Ctrl+Shift+E shortcut
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'e') {
         e.preventDefault();
-        const typeSound = document.getElementById('typeSound');
-        if (typeSound) typeSound.play().catch(() => {});
-        alert("CTRL+SHIFT+E detected ✅\nYou're already here!");
+        alert("You're already on the email puzzle page.");
       }
     });
-
-    const accessNode = document.getElementById('accessNodeLink');
-    if (accessNode) {
-      accessNode.addEventListener('click', function(evt) {
-        evt.preventDefault();
-        const typeSound = document.getElementById('typeSound');
-        if (typeSound) typeSound.play().catch(() => {});
-        alert("Access Node detected ✅\nUnlocking riddle chamber...");
-        setTimeout(() => window.location.href = "puzzle.html", 1000);
-      });
-    }
   </script>
 
 </body>
