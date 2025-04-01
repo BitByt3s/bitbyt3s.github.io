@@ -10,29 +10,52 @@
       font-family: monospace;
       text-align: center;
       padding: 30px;
+      cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur115.cur'), auto;
+      overflow-x: hidden;
     }
+
     a {
       color: #00ff00;
       text-decoration: none;
+      transition: all 0.2s ease-in-out;
     }
+
     a:hover {
+      text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
       text-decoration: underline;
     }
+
     header, nav, .terminal-box {
       border: 1px solid #00ff00;
       padding: 20px;
       margin: 20px auto;
       max-width: 800px;
     }
+
     nav a {
       margin: 0 20px;
     }
+
     footer {
       margin-top: 2em;
+    }
+
+    h1, h2 {
+      animation: glitch 1s infinite;
+    }
+
+    @keyframes glitch {
+      0% { text-shadow: 0 0 1px #00ff00; }
+      20% { text-shadow: -2px 0 2px #00ff00; }
+      40% { text-shadow: 2px 0 4px #00ff00; }
+      60% { text-shadow: -2px 0 2px #00ff00; }
+      80% { text-shadow: 2px 0 4px #00ff00; }
+      100% { text-shadow: 0 0 1px #00ff00; }
     }
   </style>
 </head>
 <body>
+
   <header>
     <h1>> bitbyt3s // hacker comics archive</h1>
     <p>Welcome to the underground comic drop zone.</p>
@@ -51,5 +74,10 @@
   <footer>
     <p>// site by bitbyt3s | coded in the shadows</p>
   </footer>
+
+  <script>
+    console.log(\"// Pssst. Dig deeper. This site has secrets hidden in the static.\");
+  </script>
+
 </body>
 </html>
