@@ -4,11 +4,26 @@
   <meta charset="UTF-8">
   <title>bitbyt3s // Hacker Comics Archive</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       background-color: black;
       color: #00ff00;
       font-family: monospace;
-      padding: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
     }
 
     a {
@@ -44,32 +59,34 @@
 </head>
 <body>
 
-  <header>
-    <h1>> bitbyt3s // hacker comics archive</h1>
-    <p>Welcome to the underground comic drop zone.</p>
-  </header>
+  <div class="container">
+    <header>
+      <h1>> bitbyt3s // hacker comics archive</h1>
+      <p>Welcome to the underground comic drop zone.</p>
+    </header>
 
-  <nav>
-    <a href="#">Home</a>
-    <a href="#comics">Comics</a>
-    <a href="#about">About</a>
-  </nav>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#comics">Comics</a>
+      <a href="#about">About</a>
+    </nav>
 
-  <div class="terminal-box" id="comics">
-    <h2>> issue archive</h2>
-    <div class="comic-list">
-      <a href="downloads/issue01.png" download>[+] Download Issue 01: Terminal Rebellion (PNG)</a>
+    <div class="terminal-box" id="comics">
+      <h2>> issue archive</h2>
+      <div class="comic-list">
+        <a href="downloads/issue01.png" download>[+] Download Issue 01: Terminal Rebellion (PNG)</a>
+      </div>
     </div>
-  </div>
 
-  <div class="terminal-box" id="about">
-    <h2>> about</h2>
-    <p>This site is a drop for an underground hacker comic series—blending cyberpunk, code, and easter eggs. Dig deep. You might find more than comics.</p>
-  </div>
+    <div class="terminal-box" id="about">
+      <h2>> about</h2>
+      <p>This site is a drop for an underground hacker comic series—blending cyberpunk, code, and easter eggs. Dig deep. You might find more than comics.</p>
+    </div>
 
-  <footer>
-    <p>// site by bitbyt3s | coded in the shadows</p>
-  </footer>
+    <footer>
+      <p>// site by bitbyt3s | coded in the shadows</p>
+    </footer>
+  </div>
 
   <script>
     console.log("Pssst. Inspect elements and dig around. Clues are everywhere.");
@@ -77,6 +94,3 @@
 
 </body>
 </html>
-
-
-
