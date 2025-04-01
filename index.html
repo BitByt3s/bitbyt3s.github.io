@@ -13,37 +13,30 @@
       cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur115.cur'), auto;
       overflow-x: hidden;
     }
-
     a {
       color: #00ff00;
       text-decoration: none;
       transition: all 0.2s ease-in-out;
     }
-
     a:hover {
       text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
       text-decoration: underline;
     }
-
     header, nav, .terminal-box {
       border: 1px solid #00ff00;
       padding: 20px;
       margin: 20px auto;
       max-width: 800px;
     }
-
     nav a {
       margin: 0 20px;
     }
-
     footer {
       margin-top: 2em;
     }
-
     h1, h2 {
       animation: glitch 1s infinite;
     }
-
     @keyframes glitch {
       0% { text-shadow: 0 0 1px #00ff00; }
       20% { text-shadow: -2px 0 2px #00ff00; }
@@ -52,9 +45,37 @@
       80% { text-shadow: 2px 0 4px #00ff00; }
       100% { text-shadow: 0 0 1px #00ff00; }
     }
+    #terminalOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.95);
+      color: #00ff00;
+      font-family: monospace;
+      z-index: 9999;
+      padding: 40px;
+    }
+    #terminalContent {
+      text-align: left;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 80vh;
+    }
+    .close-terminal {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 20px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+
+  <!-- SOUND FX -->
+  <audio id="bootSound" src="sounds/boot.mp3" preload="auto"></audio>
+  <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
 
   <header>
     <h1>> bitbyt3s // hacker comics archive</h1>
@@ -75,8 +96,43 @@
     <p>// site by bitbyt3s | coded in the shadows</p>
   </footer>
 
+  <div id="terminalOverlay">
+    <div class="close-terminal" onclick="document.getElementById('terminalOverlay').style.display='none'">[ CLOSE ]</div>
+    <div id="terminalContent"></div>
+  </div>
+
   <script>
-    console.log(\"// Pssst. Dig deeper. This site has secrets hidden in the static.\");
+    window.addEventListener('DOMContentLoaded', () => {
+      const bootSound = document.getElementById('bootSound');
+      if (bootSound) bootSound.play().catch(() => {});
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.shiftKey && e.key === 'H') {
+        const term = document.getElementById('terminalOverlay');
+        const content = document.getElementById('terminalContent');
+        const typeSound = document.getElementById('typeSound');
+        term.style.display = 'block';
+        content.innerHTML = '';
+        const lines = [
+          'Welcome to the system.',
+          'Initializing secure access...',
+          'Tracking node IP...',
+          'NODE IDENTIFIED: bitbyt3s.local',
+          '',
+          'System check: CLEAN // You are safe... for now.'
+        ];
+        let i = 0;
+        const interval = setInterval(() => {
+          if (i < lines.length) {
+            content.innerHTML += lines[i++] + '\n';
+            if (typeSound) typeSound.play().catch(() => {});
+          } else {
+            clearInterval(interval);
+          }
+        }, 300);
+      }
+    });
   </script>
 
 </body>
