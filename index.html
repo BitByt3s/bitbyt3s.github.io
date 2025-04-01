@@ -13,43 +13,71 @@
       cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur115.cur'), auto;
       overflow-x: hidden;
     }
+
     a {
       color: #00ff00;
       text-decoration: none;
       transition: all 0.2s ease-in-out;
     }
+
     a:hover {
       text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
       text-decoration: underline;
     }
+
     header, nav, .terminal-box {
       border: 1px solid #00ff00;
       padding: 20px;
       margin: 20px auto;
       max-width: 800px;
     }
+
     nav a {
       margin: 0 20px;
     }
+
     footer {
       margin-top: 2em;
     }
+
     h1, h2 {
       animation: glitch 1s infinite;
     }
+
     @keyframes glitch {
-      0% { text-shadow: 0 0 1px #00ff00; }
-      20% { text-shadow: -2px 0 2px #00ff00; }
-      40% { text-shadow: 2px 0 4px #00ff00; }
-      60% { text-shadow: -2px 0 2px #00ff00; }
-      80% { text-shadow: 2px 0 4px #00ff00; }
-      100% { text-shadow: 0 0 1px #00ff00; }
+      0%, 100% { text-shadow: 0 0 1px #00ff00; }
+      20%, 60% { text-shadow: -2px 0 2px #00ff00; }
+      40%, 80% { text-shadow: 2px 0 4px #00ff00; }
+    }
+
+    /* CRT Flicker */
+    #redirectOverlay::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 255, 0, 0.03),
+        rgba(0, 255, 0, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      animation: flicker 0.15s infinite;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 0.95; }
+      50% { opacity: 0.85; }
     }
   </style>
 </head>
 <body>
 
+  <!-- SOUND FX -->
   <audio id="bootSound" src="sounds/boot.mp3" preload="auto"></audio>
+  <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
 
   <header>
     <h1>> bitbyt3s // hacker comics archive</h1>
@@ -70,15 +98,45 @@
     <p>// site by bitbyt3s | coded in the shadows</p>
   </footer>
 
+  <!-- HACKER REDIRECT OVERLAY -->
+  <div id="redirectOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:#00ff00; z-index:9999; font-family:monospace; text-align:center; padding-top:10%; position:fixed;">
+    <h1>> Accessing hidden archive...</h1>
+    <div id="loadingBar" style="margin: 30px auto; width: 80%; height: 20px; border: 1px solid #00ff00; background-color: black; position: relative;">
+      <div id="barFill" style="height: 100%; width: 0%; background-color: #00ff00;"></div>
+    </div>
+    <p id="statusMsg">Initializing secure backdoor...</p>
+  </div>
+
   <script>
     window.onload = function () {
       const bootSound = document.getElementById('bootSound');
+      const typeSound = document.getElementById('typeSound');
       if (bootSound) bootSound.play().catch(() => {});
-      
+
       document.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.shiftKey && (e.key === 'h' || e.key === 'H')) {
-          console.log("Redirecting to secret drop...");
-          window.location.href = "https://bitbyt3s.github.io/secret.html";
+          const overlay = document.getElementById('redirectOverlay');
+          const bar = document.getElementById('barFill');
+          const status = document.getElementById('statusMsg');
+          overlay.style.display = 'block';
+
+          let width = 0;
+          const interval = setInterval(() => {
+            width += 2;
+            bar.style.width = width + '%';
+            if (typeSound) typeSound.play().catch(() => {});
+            if (width >= 100) {
+              clearInterval(interval);
+              status.textContent = "Redirecting to secure vault...";
+              setTimeout(() => {
+                window.location.href = "https://bitbyt3s.github.io/secret.html";
+              }, 1000);
+            } else if (width > 50 && width < 70) {
+              status.textContent = "Bypassing firewalls...";
+            } else if (width > 70 && width < 95) {
+              status.textContent = "Decrypting access key...";
+            }
+          }, 60);
         }
       });
     };
@@ -86,4 +144,3 @@
 
 </body>
 </html>
-
