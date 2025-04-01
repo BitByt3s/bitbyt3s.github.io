@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>bitbyt3s // Home</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
+
     body {
       background-color: black;
       color: #00ff00;
@@ -16,21 +18,14 @@
       text-align: center;
       padding: 30px;
     }
+
     canvas {
       position: fixed;
       top: 0;
       left: 0;
       z-index: -1;
     }
-    a {
-      color: #00ff00;
-      text-decoration: none;
-      transition: all 0.2s ease-in-out;
-    }
-    a:hover {
-      text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
-      text-decoration: underline;
-    }
+
     header, nav, .terminal-box {
       border: 1px solid #00ff00;
       padding: 20px;
@@ -38,33 +33,64 @@
       max-width: 800px;
       background-color: rgba(0, 0, 0, 0.85);
     }
+
     nav a {
+      color: #00ff00;
+      text-decoration: none;
       margin: 0 20px;
     }
+
+    nav a:hover {
+      text-shadow: 0 0 10px #00ff00;
+    }
+
     footer {
       margin-top: 2em;
       background-color: rgba(0, 0, 0, 0.85);
       padding: 10px;
     }
+
     h1, h2 {
       animation: glitch 1s infinite;
     }
+
     @keyframes glitch {
       0%, 100% { text-shadow: 0 0 1px #00ff00; }
       20%, 60% { text-shadow: -2px 0 2px #00ff00; }
       40%, 80% { text-shadow: 2px 0 4px #00ff00; }
     }
+
     .logo-footer {
       margin-top: 60px;
       text-align: center;
       opacity: 0.05;
       transition: opacity 0.3s ease;
     }
+
     .logo-footer img {
       max-width: 150px;
       height: auto;
     }
+
     .logo-footer:hover {
+      opacity: 1;
+    }
+
+    #accessNodeLink {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      opacity: 0.05;
+      z-index: 10000;
+    }
+
+    #accessNodeLink a {
+      color: #00ff00;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    #accessNodeLink:hover {
       opacity: 1;
     }
   </style>
@@ -73,7 +99,6 @@
 
   <canvas id="matrixCanvas"></canvas>
 
-  <!-- Audio -->
   <audio id="bootSound" src="sounds/boot.mp3" preload="auto"></audio>
   <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
 
@@ -101,10 +126,8 @@
   </footer>
 
   <!-- Hidden Puzzle Button -->
-  <div id="accessNodeLink" style="position: fixed; bottom: 10px; right: 10px; opacity: 0.05; z-index: 10000;">
-    <a href="#" style="color:#00ff00; text-decoration:none; font-size:12px;">
-      [ access node ]
-    </a>
+  <div id="accessNodeLink">
+    <a href="#">[ access node ]</a>
   </div>
 
   <!-- Logo Footer -->
@@ -112,7 +135,6 @@
     <img src="assets/logo.png" alt="bitbyt3s logo" />
   </div>
 
-  <!-- Matrix + Keyboard Scripts -->
   <script>
     const canvas = document.getElementById("matrixCanvas");
     const ctx = canvas.getContext("2d");
@@ -133,13 +155,13 @@
       for (let i = 0; i < drops.length; i++) {
         const text = letters.charAt(Math.floor(Math.random() * letters.length));
         ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
         if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
         drops[i]++;
       }
     }
+
     setInterval(drawMatrix, 50);
 
     window.onresize = () => {
@@ -150,48 +172,34 @@
     window.onload = function () {
       const bootSound = document.getElementById('bootSound');
       const typeSound = document.getElementById('typeSound');
-      if (bootSound) {
-        bootSound.play().catch(() => {});
-      }
+      if (bootSound) bootSound.play().catch(() => {});
 
-      // Ctrl + Shift + H => secret vault
       document.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'h') {
           e.preventDefault();
           if (typeSound) typeSound.play().catch(() => {});
           alert("CTRL+SHIFT+H detected ✅\nRedirecting to hidden vault...");
-          setTimeout(() => {
-            window.location.href = "secret.html";
-          }, 1000);
+          setTimeout(() => window.location.href = "secret.html", 1000);
         }
-      });
 
-      // NEW: Ctrl + Shift + E => puzzle_email
-      document.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'e') {
           e.preventDefault();
           if (typeSound) typeSound.play().catch(() => {});
           alert("CTRL+SHIFT+E detected ✅\nRedirecting to email puzzle...");
-          setTimeout(() => {
-            window.location.href = "puzzle_email.html";
-          }, 1000);
+          setTimeout(() => window.location.href = "puzzle_email.html", 1000);
         }
       });
 
-      // Access node link => puzzle
       const accessNode = document.getElementById('accessNodeLink');
       if (accessNode) {
         accessNode.addEventListener('click', function(evt) {
           evt.preventDefault();
           if (typeSound) typeSound.play().catch(() => {});
           alert("Access Node detected ✅\nUnlocking riddle chamber...");
-          setTimeout(() => {
-            window.location.href = "puzzle.html";
-          }, 1000);
+          setTimeout(() => window.location.href = "puzzle.html", 1000);
         });
       }
     };
   </script>
-
 </body>
 </html>
