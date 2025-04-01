@@ -52,6 +52,10 @@
       color: #00ff00;
     }
 
+    .puzzle.hidden {
+      display: none;
+    }
+
     a {
       color: #00ff00;
       text-decoration: none;
@@ -76,7 +80,7 @@
   <p>Each riddle below leads to a free dubstep track. Type your answer to unlock the link.</p>
 
   <!-- Puzzle 1 -->
-  <div class="puzzle">
+  <div class="puzzle" id="puzzle1">
     <p><strong>Riddle 1:</strong><br>
       I fight beside you or against you.  
       I'm always near when there’s conflict.  
@@ -90,8 +94,8 @@
     </div>
   </div>
 
-  <!-- Puzzle 2 -->
-  <div class="puzzle">
+  <!-- Puzzle 2 - Hidden until Riddle 1 is solved -->
+  <div class="puzzle hidden" id="puzzle2">
     <p><strong>Riddle 2:</strong><br>
       I appear when the sun retreats,  
       I hide in the dark where secrets meet.  
@@ -120,6 +124,11 @@
         document.getElementById("link" + puzzleNumber).style.display = "block";
         const typeSound = document.getElementById("typeSound");
         if (typeSound) typeSound.play().catch(() => {});
+
+        // Reveal next riddle if solving Riddle 1
+        if (puzzleNumber === 1) {
+          document.getElementById("puzzle2").classList.remove("hidden");
+        }
       } else {
         alert("❌ Access denied. Try again.");
       }
