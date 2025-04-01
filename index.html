@@ -38,6 +38,7 @@
       color: #00ff00;
       text-decoration: none;
       margin: 0 20px;
+      cursor: pointer;
     }
 
     nav a:hover {
@@ -93,6 +94,39 @@
     #accessNodeLink:hover {
       opacity: 1;
     }
+
+    /* Shared loader */
+    #terminalOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    #terminalOverlay pre {
+      text-align: left;
+      width: 80%;
+      max-width: 600px;
+    }
+
+    #progressBar {
+      border: 1px solid #00ff00;
+      height: 20px;
+      margin-top: 10px;
+    }
+
+    #barFill {
+      width: 0%;
+      height: 100%;
+      background: #00ff00;
+    }
   </style>
 </head>
 <body>
@@ -100,13 +134,9 @@
   <canvas id="matrixCanvas"></canvas>
 
   <!-- Terminal Loading Overlay -->
-  <div id="terminalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:#00ff00; font-family:monospace; z-index:9999; justify-content:center; align-items:center; flex-direction:column;">
-    <div style="text-align:left; width:80%; max-width:600px;">
-      <pre id="terminalText">[ booting access node... ]</pre>
-      <div id="progressBar" style="border:1px solid #00ff00; height:20px; margin-top:10px;">
-        <div id="barFill" style="width:0%; height:100%; background:#00ff00;"></div>
-      </div>
-    </div>
+  <div id="terminalOverlay">
+    <pre id="terminalText">[ booting access node... ]</pre>
+    <div id="progressBar"><div id="barFill"></div></div>
   </div>
 
   <!-- Audio -->
@@ -119,9 +149,8 @@
   </header>
 
   <nav>
-    <a href="index.html">Home</a>
-    <a href="comics.html">Comics</a>
-    <a href="about.html">About</a>
+    <a onclick="navigateWithLoader('comics.html', ['[ loading comics... ]', '[ archive unlocked... ]', '[ PASSWORD: rebellion ]'])">Comics</a>
+    <a onclick="navigateWithLoader('about.html', ['[ routing legacy path... ]', '[ validating identity... ]', '[ PASSWORD: legacyaccess ]'])">About</a>
   </nav>
 
   <div class="terminal-box">
@@ -138,7 +167,7 @@
 
   <!-- Hidden Puzzle Button -->
   <div id="accessNodeLink">
-    <a href="#">[ access node ]</a>
+    <a href="#" onclick="navigateWithLoader('puzzle.html', ['[ riddle engine booting... ]', '[ access check... ]', '[ PASSWORD: enemy ]'])">[ access node ]</a>
   </div>
 
   <!-- Logo Footer -->
@@ -179,7 +208,45 @@
       canvas.width = window.innerWidth;
     };
 
-    // CTRL+SHIFT+H loader
+    window.onload = () => {
+      const bootSound = document.getElementById("bootSound");
+      if (bootSound) bootSound.play().catch(() => {});
+    };
+
+    // Loader for all transitions
+    function navigateWithLoader(destination, messages) {
+      const overlay = document.getElementById("terminalOverlay");
+      const terminalText = document.getElementById("terminalText");
+      const barFill = document.getElementById("barFill");
+      const typeSound = document.getElementById("typeSound");
+
+      if (typeSound) typeSound.play().catch(() => {});
+      overlay.style.display = "flex";
+      terminalText.textContent = "[ accessing terminal... ]";
+
+      let msgIndex = 0;
+      const msgInterval = setInterval(() => {
+        if (msgIndex < messages.length) {
+          terminalText.textContent += "\n" + messages[msgIndex];
+          msgIndex++;
+        }
+      }, 800);
+
+      let progress = 0;
+      const barInterval = setInterval(() => {
+        progress += 2;
+        barFill.style.width = progress + "%";
+        if (progress >= 100) {
+          clearInterval(barInterval);
+          clearInterval(msgInterval);
+          setTimeout(() => {
+            window.location.href = destination;
+          }, 500);
+        }
+      }, 100);
+    }
+
+    // Ctrl+Shift+H → secret.html
     let loadingTriggered = false;
     document.addEventListener("keydown", function (e) {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "h" && !loadingTriggered) {
@@ -231,33 +298,13 @@
         }, 100);
       }
 
-      // CTRL+SHIFT+E puzzle email access
+      // Ctrl+Shift+E shortcut to puzzle_email.html
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'e') {
         e.preventDefault();
-        const typeSound = document.getElementById('typeSound');
-        if (typeSound) typeSound.play().catch(() => {});
-        alert("CTRL+SHIFT+E detected ✅\nRedirecting to email puzzle...");
-        setTimeout(() => window.location.href = "puzzle_email.html", 1000);
+        navigateWithLoader('puzzle_email.html', ['[ loading mail route... ]', '[ captcha bypassed... ]', '[ PASSWORD: emailaddress ]']);
       }
     });
-
-    // Access node click
-    const accessNode = document.getElementById('accessNodeLink');
-    if (accessNode) {
-      accessNode.addEventListener('click', function(evt) {
-        evt.preventDefault();
-        const typeSound = document.getElementById('typeSound');
-        if (typeSound) typeSound.play().catch(() => {});
-        alert("Access Node detected ✅\nUnlocking riddle chamber...");
-        setTimeout(() => window.location.href = "puzzle.html", 1000);
-      });
-    }
-
-    // Boot sound on load
-    window.onload = () => {
-      const bootSound = document.getElementById("bootSound");
-      if (bootSound) bootSound.play().catch(() => {});
-    };
   </script>
+
 </body>
 </html>
