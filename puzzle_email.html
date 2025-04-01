@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>BitByt3s // Email Puzzle</title>
   <style>
+    /* Basic reset & full-screen matrix background */
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
     body {
       background-color: black;
       color: #00ff00;
@@ -11,6 +18,16 @@
       text-align: center;
       padding: 40px;
     }
+
+    /* Matrix canvas styling */
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1; /* behind everything */
+    }
+
+    /* Puzzle & form containers */
     .puzzle, .signup-form {
       border: 1px solid #00ff00;
       padding: 20px;
@@ -18,6 +35,8 @@
       max-width: 600px;
       background-color: rgba(0,0,0,0.85);
     }
+
+    /* Basic input & textarea styling */
     input, textarea {
       width: 100%;
       margin-bottom: 10px;
@@ -25,7 +44,11 @@
       color: #00ff00;
       border: 1px solid #00ff00;
       font-family: monospace;
+      font-size: 16px;
+      padding: 8px;
     }
+
+    /* Buttons */
     button {
       background-color: black;
       color: #00ff00;
@@ -37,45 +60,148 @@
     button:hover {
       text-shadow: 0 0 5px #00ff00;
     }
+
+    /* Hide the signup form until puzzle is solved */
     .signup-form {
-      display: none; /* hidden until puzzle pass is correct */
+      display: none;
+    }
+
+    /* Glitch text effect for the heading */
+    h1 {
+      animation: glitch 1s infinite;
+    }
+
+    /* Reusable glitch keyframes */
+    @keyframes glitch {
+      0% { text-shadow: 0 0 1px #00ff00; }
+      20% { text-shadow: -2px 0 2px #00ff00; }
+      40% { text-shadow: 2px 0 4px #00ff00; }
+      60% { text-shadow: -2px 0 2px #00ff00; }
+      80% { text-shadow: 2px 0 4px #00ff00; }
+      100% { text-shadow: 0 0 1px #00ff00; }
+    }
+
+    /* Back to Home button */
+    .back-home {
+      display: inline-block;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #00ff00;
+      text-decoration: none;
+      border: 1px solid #00ff00;
+      padding: 8px 16px;
+    }
+    .back-home:hover {
+      text-shadow: 0 0 8px #00ff00;
+    }
+
+    /* Logo footer fade-in effect */
+    .logo-footer {
+      margin-top: 60px;
+      text-align: center;
+      opacity: 0.05;
+      transition: opacity 0.3s ease;
+    }
+    .logo-footer img {
+      max-width: 150px;
+      height: auto;
+    }
+    .logo-footer:hover {
+      opacity: 1;
     }
   </style>
 </head>
 <body>
 
+  <!-- Matrix background canvas -->
+  <canvas id="matrixCanvas"></canvas>
+
   <h1>> Hidden Email Puzzle</h1>
 
+  <!-- Puzzle section -->
   <div class="puzzle">
     <h2>> Solve to Unlock the Email Signup</h2>
     <p>Riddle: "I'm electronic, I'm essential. I'm known as snail mail's high-tech sibling."</p>
     <p><em>Hint: It's two words merged into one, all lowercase!</em></p>
 
     <label for="puzzlePass">Enter Passcode:</label>
-    <input id="puzzlePass" type="text" placeholder="Type your guess...">
+    <input id="puzzlePass" type="text" placeholder="Type your guess..." />
     <button onclick="checkPuzzle()">Unlock</button>
   </div>
 
+  <!-- Signup form (hidden by default) -->
   <div class="signup-form" id="signupForm">
     <h2>> Newsletter / Email List</h2>
     <p>Nice work! Enter your info below to join the list:</p>
     <form action="https://formspree.io/f/xnnpberb" method="POST">
       <label for="email">Email:</label>
-      <input type="email" name="email" id="email" required>
+      <input type="email" name="email" id="email" required />
 
       <label for="msg">Message:</label>
-      <textarea name="message" id="msg"></textarea>
+      <textarea name="message" id="msg" rows="4"></textarea>
 
       <button type="submit">Send</button>
     </form>
   </div>
 
+  <!-- Back to Home -->
+  <a class="back-home" href="index.html">← Back to Home</a>
+
+  <!-- Logo Footer -->
+  <div class="logo-footer">
+    <img src="assets/logo.png" alt="bitbyt3s logo" />
+  </div>
+
   <script>
+    /******************************************************
+     * 1) Matrix background
+     ******************************************************/
+    const canvas = document.getElementById("matrixCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const letters = "01";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const drops = Array.from({ length: columns }).fill(1);
+
+    function drawMatrix() {
+      // faint black overlay to create trailing effect
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#0F0";
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        // reset drop to top randomly
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    setInterval(drawMatrix, 50);
+
+    // handle screen resize
+    window.onresize = () => {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+    };
+
+    /******************************************************
+     * 2) Puzzle passcode logic
+     ******************************************************/
     function checkPuzzle() {
       const passInput = document.getElementById('puzzlePass');
       const passVal = passInput.value.trim().toLowerCase();
 
-      // For example passcode is "emailaddress"
+      // For example, passcode is "emailaddress"
       if (passVal === 'emailaddress') {
         alert("Correct passcode! Revealing signup form...");
         document.getElementById('signupForm').style.display = 'block';
