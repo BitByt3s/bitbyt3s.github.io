@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <title>bitbyt3s // Puzzle Vault</title>
   <style>
+    /* Basic matrix background + hacking vibe */
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
     }
-
     body {
       background-color: black;
       color: #00ff00;
@@ -17,7 +17,6 @@
       text-align: center;
       padding: 40px;
     }
-
     canvas {
       position: fixed;
       top: 0;
@@ -25,6 +24,23 @@
       z-index: -1;
     }
 
+    /* Puzzle & link styling */
+    .puzzle, .linkReveal {
+      border: 1px solid #00ff00;
+      padding: 20px;
+      margin: 30px auto;
+      max-width: 700px;
+      text-align: left;
+      background-color: rgba(0,0,0,0.8);
+    }
+    .linkReveal {
+      display: none; /* hidden until puzzle is solved */
+    }
+    .hidden {
+      display: none; /* puzzle 2 & 3 hidden until prior puzzle is solved */
+    }
+
+    /* Basic input + button styling */
     input {
       width: 100%;
       padding: 10px;
@@ -35,7 +51,6 @@
       font-family: monospace;
       font-size: 16px;
     }
-
     button {
       margin-top: 10px;
       padding: 8px 20px;
@@ -45,52 +60,14 @@
       cursor: pointer;
       font-family: monospace;
     }
-
-    .puzzle, .linkReveal {
-      border: 1px solid #00ff00;
-      padding: 20px;
-      margin: 30px auto;
-      max-width: 700px;
-      text-align: left;
-      background-color: rgba(0,0,0,0.8);
-    }
-
-    .linkReveal {
-      display: none;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    a {
-      color: #00ff00;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    a:hover {
+    button:hover {
       text-shadow: 0 0 6px #00ff00;
     }
 
-    .back-home {
-      display: inline-block;
-      margin-top: 40px;
-      font-size: 14px;
-      color: #00ff00;
-      text-decoration: none;
-      border: 1px solid #00ff00;
-      padding: 8px 16px;
-    }
-
-    .back-home:hover {
-      text-shadow: 0 0 8px #00ff00;
-    }
-
+    /* Glitch heading */
     h1 {
       animation: glitch 1s infinite;
     }
-
     @keyframes glitch {
       0% { text-shadow: 0 0 1px #00ff00; }
       20% { text-shadow: -2px 0 2px #00ff00; }
@@ -100,20 +77,40 @@
       100% { text-shadow: 0 0 1px #00ff00; }
     }
 
+    /* back-home link */
+    .back-home {
+      display: inline-block;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #00ff00;
+      text-decoration: none;
+      border: 1px solid #00ff00;
+      padding: 8px 16px;
+    }
+    .back-home:hover {
+      text-shadow: 0 0 8px #00ff00;
+    }
+
+    /* Glowing logo footer */
     .logo-footer {
       margin-top: 60px;
       text-align: center;
       opacity: 0.05;
       transition: opacity 0.3s ease;
     }
-
     .logo-footer img {
       max-width: 150px;
       height: auto;
     }
-
     .logo-footer:hover {
       opacity: 1;
+    }
+
+    /* Artist logo styling (optional) */
+    .artist-logo {
+      display: block;
+      max-width: 200px;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -121,72 +118,87 @@
 
   <canvas id="matrixCanvas"></canvas>
 
+  <!-- Sound effect for puzzle unlock -->
   <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
 
   <h1>> puzzle vault access</h1>
+  <p>Solve each riddle in sequence. Each correct answer unlocks a new dubstep track + artist logo, and reveals the next puzzle!</p>
 
-  <!-- Passkey prompt -->
-  <div id="gatekeeper">
-    <p>Enter vault passkey to access riddles:</p>
-    <input id="vaultInput" placeholder="enter passkey..." />
-    <br>
-    <button onclick="checkVault()">Unlock Vault</button>
+  <!-- Puzzle 1 -->
+  <div class="puzzle" id="puzzle1">
+    <p><strong>Riddle 1:</strong><br>
+       I fight beside you or against you.  
+       I'm always near when there’s conflict.  
+       You didn’t choose me — I chose you.  
+       <br><em>What am I?</em>
+    </p>
+    <input id="answer1" placeholder="your answer..." />
+    <button onclick="checkAnswer(1)">Unlock</button>
+
+    <div id="link1" class="linkReveal">
+      <p>✅ Track unlocked:  
+        <a href="https://soundcloud.com/ebmarah/enemy" target="_blank">Ebmarah – ENEMY</a>
+      </p>
+      <!-- Ebmarah’s Logo -->
+      <img class="artist-logo" src="assets/ebmarah.png" alt="Ebmarah Logo" />
+    </div>
   </div>
 
-  <!-- Puzzle zone -->
-  <div id="puzzleZone" class="hidden">
-    <p>Each riddle unlocks a hidden dubstep track. Type your answer to continue.</p>
+  <!-- Puzzle 2 (hidden initially) -->
+  <div class="puzzle hidden" id="puzzle2">
+    <p><strong>Riddle 2:</strong><br>
+       I appear when the sun retreats,  
+       I hide in the dark where secrets meet.  
+       I guide your steps without a light.  
+       <br><em>Where do we go?</em>
+    </p>
+    <input id="answer2" placeholder="your answer..." />
+    <button onclick="checkAnswer(2)">Unlock</button>
 
-    <!-- Puzzle 1 -->
-    <div class="puzzle" id="puzzle1">
-      <p><strong>Riddle 1:</strong><br>
-        I fight beside you or against you.  
-        I'm always near when there’s conflict.  
-        You didn’t choose me—I chose you.  
-        <br><em>What am I?</em>
+    <div id="link2" class="linkReveal">
+      <p>✅ Track unlocked:  
+        <a href="https://soundcloud.com/fermilat/wherewegoatnight" target="_blank">Fermilat – WHERE WE GO AT NIGHT</a>
       </p>
-      <input id="answer1" placeholder="your answer...">
-      <button onclick="checkAnswer(1)">Unlock</button>
-      <div id="link1" class="linkReveal">
-        ✅ Track unlocked: <a href="https://soundcloud.com/ebmarah/enemy" target="_blank">Ebmarah – ENEMY</a>
-      </div>
+      <!-- Fermilat’s Logo -->
+      <img class="artist-logo" src="assets/fermilatwhite.png" alt="Fermilat Logo" />
     </div>
+  </div>
 
-    <!-- Puzzle 2 -->
-    <div class="puzzle hidden" id="puzzle2">
-      <p><strong>Riddle 2:</strong><br>
-        I appear when the sun retreats,  
-        I hide in the dark where secrets meet.  
-        I guide your steps without a light.  
-        <br><em>Where do we go?</em>
+  <!-- Puzzle 3 (also hidden initially) -->
+  <div class="puzzle hidden" id="puzzle3">
+    <p><strong>Riddle 3:</strong><br>
+       I am the reverberation of motion,<br>
+       carried on waves in eternal ocean.<br>
+       My voice is felt in hush or roar,<br>
+       flowing unseen as circuits soar.<br>
+       <br><em>What am I?</em>
+    </p>
+    <input id="answer3" placeholder="your answer..." />
+    <button onclick="checkAnswer(3)">Unlock</button>
+
+    <div id="link3" class="linkReveal">
+      <p>✅ Track unlocked:  
+        <a href="https://soundcloud.com/metallikhmb/echoes-of-the-flow-v6-im-not" target="_blank">Metallik – ECHOES OF THE FLOW</a>
       </p>
-      <input id="answer2" placeholder="your answer...">
-      <button onclick="checkAnswer(2)">Unlock</button>
-      <div id="link2" class="linkReveal">
-        ✅ Track unlocked: <a href="https://soundcloud.com/fermilat/wherewegoatnight" target="_blank">Fermilat – WHERE WE GO AT NIGHT</a>
-      </div>
+      <!-- Metallik’s Logo -->
+      <img class="artist-logo" src="assets/metallik.png" alt="Metallik Logo" />
     </div>
   </div>
 
   <a class="back-home" href="index.html">← Back to Home</a>
 
-  <!-- Hidden Puzzle Button -->
-  <div id="accessNodeLink" style="position: fixed; bottom: 10px; right: 10px; opacity: 0.05; z-index: 10000;">
-    <a href="#" style="color:#00ff00; text-decoration:none; font-size:12px;">
-      [ access node ]
-    </a>
-  </div>
-
-  <!-- Logo Footer -->
+  <!-- Logo fade-in -->
   <div class="logo-footer">
     <img src="assets/logo.png" alt="bitbyt3s logo" />
   </div>
 
   <script>
+    /* Matrix background setup */
     const canvas = document.getElementById("matrixCanvas");
     const ctx = canvas.getContext("2d");
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
+
     const letters = "01";
     const fontSize = 16;
     const columns = canvas.width / fontSize;
@@ -197,78 +209,64 @@
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = "#0F0";
       ctx.font = fontSize + "px monospace";
+
       for (let i = 0; i < drops.length; i++) {
         const text = letters.charAt(Math.floor(Math.random() * letters.length));
         ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
         drops[i]++;
       }
     }
 
     setInterval(drawMatrix, 50);
+
     window.onresize = () => {
       canvas.height = window.innerHeight;
       canvas.width = window.innerWidth;
     };
 
-    function checkVault() {
-      const val = document.getElementById('vaultInput').value.trim().toLowerCase();
-      const typeSound = document.getElementById('typeSound');
-      if (val === 'dubstep') {
-        document.getElementById('gatekeeper').style.display = 'none';
-        document.getElementById('puzzleZone').classList.remove('hidden');
-        if (typeSound) typeSound.play().catch(() => {});
-      } else {
-        alert("❌ Access denied. Try again.");
-      }
-    }
+    /* Sound effect + puzzle answers */
+    const typeSound = document.getElementById('typeSound');
+
+    /* Riddle answers:
+        #1: "enemy"
+        #2: "where we go at night"
+        #3: "echoes of the flow"
+    */
+    const answers = {
+      1: "enemy",
+      2: "where we go at night",
+      3: "echoes of the flow"
+    };
 
     function checkAnswer(puzzleNumber) {
-      const answers = {
-        1: "enemy",
-        2: "where we go at night"
-      };
-      const input = document.getElementById("answer" + puzzleNumber);
+      const input = document.getElementById(`answer${puzzleNumber}`);
       const guess = input.value.trim().toLowerCase();
       const correct = answers[puzzleNumber];
+
       if (guess === correct) {
-        document.getElementById("link" + puzzleNumber).style.display = "block";
-        const typeSound = document.getElementById("typeSound");
-        if (typeSound) typeSound.play().catch(() => {});
+        /* Reveal track link + artist logo for this puzzle */
+        document.getElementById(`link${puzzleNumber}`).style.display = "block";
+
+        if (typeSound) {
+          typeSound.play().catch(() => {});
+        }
+        alert(`Puzzle #${puzzleNumber} solved! Track + logo unlocked.`);
+
+        /* Unlock next puzzle if not the last */
         if (puzzleNumber === 1) {
           document.getElementById("puzzle2").classList.remove("hidden");
+        } else if (puzzleNumber === 2) {
+          document.getElementById("puzzle3").classList.remove("hidden");
+        } else if (puzzleNumber === 3) {
+          alert("All riddles solved — you've unlocked all 3 tracks + logos!");
         }
       } else {
         alert("❌ Incorrect. Try again.");
       }
     }
-
-    window.onload = function () {
-      const typeSound = document.getElementById('typeSound');
-
-      document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'h') {
-          e.preventDefault();
-          if (typeSound) typeSound.play().catch(() => {});
-          alert("CTRL+SHIFT+H detected ✅\nRedirecting to hidden vault...");
-          setTimeout(() => {
-            window.location.href = "secret.html";
-          }, 1000);
-        }
-      });
-
-      const accessNode = document.getElementById('accessNodeLink');
-      if (accessNode) {
-        accessNode.addEventListener('click', function(e) {
-          e.preventDefault();
-          if (typeSound) typeSound.play().catch(() => {});
-          alert("Access Node detected ✅\nUnlocking riddle chamber...");
-          setTimeout(() => {
-            window.location.href = "puzzle.html";
-          }, 1000);
-        });
-      }
-    };
   </script>
 
 </body>
