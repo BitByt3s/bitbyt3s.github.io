@@ -13,42 +13,34 @@
       cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur115.cur'), auto;
       overflow-x: hidden;
     }
-
     a {
       color: #00ff00;
       text-decoration: none;
       transition: all 0.2s ease-in-out;
     }
-
     a:hover {
       text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
       text-decoration: underline;
     }
-
     header, nav, .terminal-box {
       border: 1px solid #00ff00;
       padding: 20px;
       margin: 20px auto;
       max-width: 800px;
     }
-
     nav a {
       margin: 0 20px;
     }
-
     .comic-list a {
       display: block;
       margin-bottom: 10px;
     }
-
     footer {
       margin-top: 2em;
     }
-
     h1, h2 {
       animation: glitch 1s infinite;
     }
-
     @keyframes glitch {
       0% { text-shadow: 0 0 1px #00ff00; }
       20% { text-shadow: -2px 0 2px #00ff00; }
@@ -57,8 +49,6 @@
       80% { text-shadow: 2px 0 4px #00ff00; }
       100% { text-shadow: 0 0 1px #00ff00; }
     }
-
-    /* Terminal Easter Egg Overlay */
     #terminalOverlay {
       display: none;
       position: fixed;
@@ -70,14 +60,12 @@
       z-index: 9999;
       padding: 40px;
     }
-
     #terminalContent {
       text-align: left;
       white-space: pre-wrap;
       overflow-y: auto;
       max-height: 80vh;
     }
-
     .close-terminal {
       position: absolute;
       top: 20px;
@@ -88,6 +76,10 @@
   </style>
 </head>
 <body>
+
+  <!-- SOUND FX -->
+  <audio id="bootSound" src="sounds/boot.mp3" preload="auto"></audio>
+  <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
 
   <header>
     <h1>> bitbyt3s // issue archive</h1>
@@ -111,32 +103,37 @@
     <p>// site by bitbyt3s | coded in the shadows</p>
   </footer>
 
-  <!-- Terminal Easter Egg -->
   <div id="terminalOverlay">
     <div class="close-terminal" onclick="document.getElementById('terminalOverlay').style.display='none'">[ CLOSE ]</div>
     <div id="terminalContent"></div>
   </div>
 
   <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const bootSound = document.getElementById('bootSound');
+      if (bootSound) bootSound.play().catch(() => {});
+    });
+
     document.addEventListener('keydown', function(e) {
       if (e.ctrlKey && e.shiftKey && e.key === 'H') {
         const term = document.getElementById('terminalOverlay');
         const content = document.getElementById('terminalContent');
+        const typeSound = document.getElementById('typeSound');
         term.style.display = 'block';
         content.innerHTML = '';
         const lines = [
-          'bitbyt3s secure archive terminal',
-          'establishing encrypted channel...',
-          'decrypting comic metadata...',
-          'locating easter eggs...',
-          'LOADED: /hidden/issue01/track_drop.vault',
+          'Accessing issue logs...',
+          'Decrypting vault key...',
+          'Scan complete.',
           '',
-          'Access granted. Proceed with caution...'
+          'File found: /downloads/issue01.png',
+          '→ Comic contains secret coordinates.'
         ];
         let i = 0;
         const interval = setInterval(() => {
           if (i < lines.length) {
-            content.innerHTML += lines[i++] + '\\n';
+            content.innerHTML += lines[i++] + '\n';
+            if (typeSound) typeSound.play().catch(() => {});
           } else {
             clearInterval(interval);
           }
