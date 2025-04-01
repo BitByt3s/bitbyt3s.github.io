@@ -99,6 +99,22 @@
       80% { text-shadow: 2px 0 4px #00ff00; }
       100% { text-shadow: 0 0 1px #00ff00; }
     }
+
+    .logo-footer {
+      margin-top: 60px;
+      text-align: center;
+      opacity: 0.05;
+      transition: opacity 0.3s ease;
+    }
+
+    .logo-footer img {
+      max-width: 150px;
+      height: auto;
+    }
+
+    .logo-footer:hover {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -155,8 +171,12 @@
 
   <a class="back-home" href="index.html">← Back to Home</a>
 
+  <!-- Logo Footer -->
+  <div class="logo-footer">
+    <img src="assets/logo.png" alt="bitbyt3s logo" />
+  </div>
+
   <script>
-    // Matrix background
     const canvas = document.getElementById("matrixCanvas");
     const ctx = canvas.getContext("2d");
     canvas.height = window.innerHeight;
