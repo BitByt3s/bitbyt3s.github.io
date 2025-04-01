@@ -17,14 +17,6 @@
       animation: glitch 1s infinite;
     }
 
-    .puzzle {
-      border: 1px solid #00ff00;
-      padding: 20px;
-      margin: 30px auto;
-      max-width: 700px;
-      text-align: left;
-    }
-
     input {
       width: 100%;
       padding: 10px;
@@ -46,10 +38,20 @@
       font-family: monospace;
     }
 
+    .puzzle, .linkReveal {
+      border: 1px solid #00ff00;
+      padding: 20px;
+      margin: 30px auto;
+      max-width: 700px;
+      text-align: left;
+    }
+
     .linkReveal {
-      margin-top: 10px;
       display: none;
-      color: #00ff00;
+    }
+
+    .hidden {
+      display: none;
     }
 
     a {
@@ -58,8 +60,8 @@
       font-weight: bold;
     }
 
-    .hidden {
-      display: none;
+    a:hover {
+      text-shadow: 0 0 6px #00ff00;
     }
 
     .back-home {
@@ -90,42 +92,68 @@
 
   <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
 
-  <h1>> puzzle vault: unlock the drops</h1>
-  <p>Each riddle below leads to a free dubstep track. Type your answer to unlock the link.</p>
+  <h1>> puzzle vault access</h1>
 
-  <!-- Puzzle 1 -->
-  <div class="puzzle" id="puzzle1">
-    <p><strong>Riddle 1:</strong><br>
-      I fight beside you or against you.  
-      I'm always near when there’s conflict.  
-      You didn’t choose me—I chose you.  
-      <br><em>What am I?</em>
-    </p>
-    <input id="answer1" placeholder="your answer...">
-    <button onclick="checkAnswer(1)">Unlock</button>
-    <div id="link1" class="linkReveal">
-      ✅ Track unlocked: <a href="https://soundcloud.com/ebmarah/enemy" target="_blank">Ebmarah – ENEMY</a>
-    </div>
+  <!-- Passkey prompt first -->
+  <div id="gatekeeper">
+    <p>Enter vault passkey to access riddles:</p>
+    <input id="vaultInput" placeholder="enter passkey..." />
+    <br>
+    <button onclick="checkVault()">Unlock Vault</button>
   </div>
 
-  <!-- Puzzle 2 -->
-  <div class="puzzle hidden" id="puzzle2">
-    <p><strong>Riddle 2:</strong><br>
-      I appear when the sun retreats,  
-      I hide in the dark where secrets meet.  
-      I guide your steps without a light.  
-      <br><em>Where do we go?</em>
-    </p>
-    <input id="answer2" placeholder="your answer...">
-    <button onclick="checkAnswer(2)">Unlock</button>
-    <div id="link2" class="linkReveal">
-      ✅ Track unlocked: <a href="https://soundcloud.com/fermilat/wherewegoatnight" target="_blank">Fermilat – WHERE WE GO AT NIGHT</a>
+  <!-- Hidden puzzle zone -->
+  <div id="puzzleZone" class="hidden">
+
+    <p>Each riddle unlocks a hidden dubstep track. Type your answer to continue.</p>
+
+    <!-- Puzzle 1 -->
+    <div class="puzzle" id="puzzle1">
+      <p><strong>Riddle 1:</strong><br>
+        I fight beside you or against you.  
+        I'm always near when there’s conflict.  
+        You didn’t choose me—I chose you.  
+        <br><em>What am I?</em>
+      </p>
+      <input id="answer1" placeholder="your answer...">
+      <button onclick="checkAnswer(1)">Unlock</button>
+      <div id="link1" class="linkReveal">
+        ✅ Track unlocked: <a href="https://soundcloud.com/ebmarah/enemy" target="_blank">Ebmarah – ENEMY</a>
+      </div>
     </div>
+
+    <!-- Puzzle 2 -->
+    <div class="puzzle hidden" id="puzzle2">
+      <p><strong>Riddle 2:</strong><br>
+        I appear when the sun retreats,  
+        I hide in the dark where secrets meet.  
+        I guide your steps without a light.  
+        <br><em>Where do we go?</em>
+      </p>
+      <input id="answer2" placeholder="your answer...">
+      <button onclick="checkAnswer(2)">Unlock</button>
+      <div id="link2" class="linkReveal">
+        ✅ Track unlocked: <a href="https://soundcloud.com/fermilat/wherewegoatnight" target="_blank">Fermilat – WHERE WE GO AT NIGHT</a>
+      </div>
+    </div>
+
   </div>
 
   <a class="back-home" href="index.html">← Back to Home</a>
 
   <script>
+    function checkVault() {
+      const val = document.getElementById('vaultInput').value.trim().toLowerCase();
+      const typeSound = document.getElementById('typeSound');
+      if (val === 'dubstep') {
+        document.getElementById('gatekeeper').style.display = 'none';
+        document.getElementById('puzzleZone').classList.remove('hidden');
+        if (typeSound) typeSound.play().catch(() => {});
+      } else {
+        alert("❌ Access denied. Try again.");
+      }
+    }
+
     function checkAnswer(puzzleNumber) {
       const answers = {
         1: "enemy",
@@ -145,7 +173,7 @@
           document.getElementById("puzzle2").classList.remove("hidden");
         }
       } else {
-        alert("❌ Access denied. Try again.");
+        alert("❌ Incorrect. Try again.");
       }
     }
   </script>
