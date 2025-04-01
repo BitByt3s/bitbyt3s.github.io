@@ -52,14 +52,28 @@
       color: #00ff00;
     }
 
-    .puzzle.hidden {
-      display: none;
-    }
-
     a {
       color: #00ff00;
       text-decoration: none;
       font-weight: bold;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .back-home {
+      display: inline-block;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #00ff00;
+      text-decoration: none;
+      border: 1px solid #00ff00;
+      padding: 8px 16px;
+    }
+
+    .back-home:hover {
+      text-shadow: 0 0 8px #00ff00;
     }
 
     @keyframes glitch {
@@ -94,7 +108,7 @@
     </div>
   </div>
 
-  <!-- Puzzle 2 - Hidden until Riddle 1 is solved -->
+  <!-- Puzzle 2 -->
   <div class="puzzle hidden" id="puzzle2">
     <p><strong>Riddle 2:</strong><br>
       I appear when the sun retreats,  
@@ -108,6 +122,8 @@
       ✅ Track unlocked: <a href="https://soundcloud.com/fermilat/wherewegoatnight" target="_blank">Fermilat – WHERE WE GO AT NIGHT</a>
     </div>
   </div>
+
+  <a class="back-home" href="index.html">← Back to Home</a>
 
   <script>
     function checkAnswer(puzzleNumber) {
@@ -125,7 +141,6 @@
         const typeSound = document.getElementById("typeSound");
         if (typeSound) typeSound.play().catch(() => {});
 
-        // Reveal next riddle if solving Riddle 1
         if (puzzleNumber === 1) {
           document.getElementById("puzzle2").classList.remove("hidden");
         }
