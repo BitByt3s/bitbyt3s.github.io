@@ -50,7 +50,20 @@
       40%, 80% { text-shadow: 2px 0 4px #00ff00; }
     }
 
-    #redirectOverlay::after {
+    #redirectOverlay, #accessNodeOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+      z-index: 9999;
+      text-align: center;
+      padding-top: 10%;
+    }
+
+    #redirectOverlay::after, #accessNodeOverlay::after {
       content: "";
       position: absolute;
       top: 0; left: 0;
@@ -71,7 +84,6 @@
       50% { opacity: 0.85; }
     }
 
-    /* 👁️ Hidden puzzle node */
     #hiddenPuzzleBtn {
       position: fixed;
       bottom: 10px;
@@ -90,11 +102,9 @@
 </head>
 <body>
 
-  <!-- 🔐 Hidden Source Clues -->
-  <!-- vault hint: control the shift of history -->
-  <!-- try key combo -->
+  <!-- Hidden hint -->
+  <!-- ctrl+shift+h → karatechop | [access node] → dubstep -->
 
-  <!-- AUDIO -->
   <audio id="bootSound" src="sounds/boot.mp3" preload="auto"></audio>
   <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
 
@@ -112,11 +122,9 @@
   <div class="terminal-box">
     <p>Use the tabs above to explore issues and lore. This is the main zone. Expect more soon.</p>
 
-    <!-- 🧩 Visual Puzzle Hint -->
-    <div style="margin-top: 60px; color: #00ff00; font-family:monospace; font-size:14px;">
+    <div style="margin-top: 60px; font-size:14px;">
       >> access method required  
-      <br>
-      <span style="opacity:0.6;">// hint: control the shift of history</span>
+      <br><span style="opacity:0.6;">// hint: control the shift of history</span>
     </div>
   </div>
 
@@ -126,15 +134,24 @@
 
   <!-- 👁️ Hidden Puzzle Button -->
   <div id="hiddenPuzzleBtn">
-    <a href="puzzle.html" style="color:#00ff00; text-decoration:none; font-size:12px;">
+    <a href="#" onclick="triggerAccessNode(); return false;" style="color:#00ff00; text-decoration:none; font-size:12px;">
       [ access node ]
     </a>
   </div>
 
-  <!-- HACKER REDIRECT OVERLAY -->
-  <div id="redirectOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:#00ff00; z-index:9999; font-family:monospace; text-align:center; padding-top:10%;">
+  <!-- Access Node Overlay -->
+  <div id="accessNodeOverlay">
+    <h1>> Opening gateway...</h1>
+    <div style="margin: 30px auto; width: 80%; height: 20px; border: 1px solid #00ff00; background-color: black;">
+      <div id="accessBarFill" style="height: 100%; width: 0%; background-color: #00ff00;"></div>
+    </div>
+    <p id="accessStatus">Initializing sequence...</p>
+  </div>
+
+  <!-- CTRL+SHIFT+H Overlay (unchanged, for karatechop access) -->
+  <div id="redirectOverlay">
     <h1>> Accessing hidden archive...</h1>
-    <div id="loadingBar" style="margin: 30px auto; width: 80%; height: 20px; border: 1px solid #00ff00; background-color: black; position: relative;">
+    <div id="loadingBar" style="margin: 30px auto; width: 80%; height: 20px; border: 1px solid #00ff00; background-color: black;">
       <div id="barFill" style="height: 100%; width: 0%; background-color: #00ff00;"></div>
     </div>
     <p id="statusMsg">Initializing secure backdoor...</p>
@@ -146,11 +163,9 @@
       const typeSound = document.getElementById('typeSound');
       if (bootSound) bootSound.play().catch(() => {});
 
-      // Console clue
       console.log("%c>> Terminal locked. Access required.", "color: #00ff00; font-family: monospace");
-      console.log("%c// Hint: Control. Shift. History...", "color: #00ff00; font-family: monospace");
 
-      // Ctrl+Shift+H redirect
+      // CTRL+SHIFT+H: loads secret.html
       document.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.shiftKey && (e.key === 'h' || e.key === 'H')) {
           const overlay = document.getElementById('redirectOverlay');
@@ -164,15 +179,10 @@
             bar.style.width = width + '%';
             if (typeSound) typeSound.play().catch(() => {});
 
-            if (width === 60) {
-              status.textContent = "→ Injecting passkey...";
-            } else if (width === 66) {
-              status.textContent = "→ Passkey = karatechop";
-            } else if (width > 50 && width < 70 && width !== 60 && width !== 66) {
-              status.textContent = "Bypassing firewalls...";
-            } else if (width > 70 && width < 95) {
-              status.textContent = "Decrypting access key...";
-            }
+            if (width === 60) status.textContent = "→ Injecting passkey...";
+            else if (width === 66) status.textContent = "→ Passkey = karatechop";
+            else if (width > 50 && width < 70 && width !== 60 && width !== 66) status.textContent = "Bypassing firewalls...";
+            else if (width > 70 && width < 95) status.textContent = "Decrypting access key...";
 
             if (width >= 100) {
               clearInterval(interval);
@@ -185,6 +195,33 @@
         }
       });
     };
+
+    function triggerAccessNode() {
+      const overlay = document.getElementById('accessNodeOverlay');
+      const bar = document.getElementById('accessBarFill');
+      const status = document.getElementById('accessStatus');
+      const typeSound = document.getElementById('typeSound');
+      overlay.style.display = 'block';
+
+      let width = 0;
+      const interval = setInterval(() => {
+        width += 2;
+        bar.style.width = width + '%';
+        if (typeSound) typeSound.play().catch(() => {});
+
+        if (width === 40) status.textContent = "→ Injecting secondary key...";
+        else if (width === 55) status.textContent = "→ Secondary key = dubstep";
+        else if (width > 60 && width < 90) status.textContent = "Verifying chain integrity...";
+
+        if (width >= 100) {
+          clearInterval(interval);
+          status.textContent = "Redirecting to puzzle vault...";
+          setTimeout(() => {
+            window.location.href = "puzzle.html";
+          }, 1000);
+        }
+      }, 80); // slower for clarity
+    }
   </script>
 
 </body>
