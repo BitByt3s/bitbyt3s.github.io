@@ -78,17 +78,17 @@
   </footer>
 
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
+    window.onload = function () {
       const bootSound = document.getElementById('bootSound');
       if (bootSound) bootSound.play().catch(() => {});
-    });
-
-    // Redirect to secret drop on Ctrl + Shift + H
-    document.addEventListener('keydown', function(e) {
-      if (e.ctrlKey && e.shiftKey && e.key === 'H') {
-        window.location.href = "https://bitbyt3s.github.io/secret.html";
-      }
-    });
+      
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.shiftKey && (e.key === 'h' || e.key === 'H')) {
+          console.log("Redirecting to secret drop...");
+          window.location.href = "https://bitbyt3s.github.io/secret.html";
+        }
+      });
+    };
   </script>
 
 </body>
