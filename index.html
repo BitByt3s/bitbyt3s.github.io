@@ -1,82 +1,82 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bitbyt3s | Hacker Comics</title>
+  <meta charset="UTF-8">
+  <title>bitbyt3s // Hacker Comics Archive</title>
   <style>
     body {
-      background-color: #000;
+      background-color: black;
       color: #00ff00;
-      font-family: 'Courier New', Courier, monospace;
-      margin: 0;
-      padding: 0;
+      font-family: monospace;
+      padding: 30px;
     }
-    header {
-      padding: 1em;
-      text-align: center;
-      border-bottom: 2px solid #00ff00;
-    }
-    nav {
-      text-align: center;
-      margin-top: 1em;
-    }
-    nav a {
+
+    a {
       color: #00ff00;
       text-decoration: none;
-      margin: 0 10px;
     }
-    .terminal-box {
-      background-color: #111;
-      padding: 1em;
-      margin: 2em auto;
-      max-width: 800px;
-      border: 1px solid #0f0;
-    }
-    .comic-list a {
-      display: block;
-      color: #0f0;
-      margin: 0.5em 0;
-      text-decoration: none;
-    }
-    .comic-list a:hover {
+
+    a:hover {
       text-decoration: underline;
     }
+
+    header, nav, .terminal-box {
+      border: 1px solid #00ff00;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    nav a {
+      margin-right: 20px;
+    }
+
+    .comic-list a {
+      display: block;
+      margin-bottom: 10px;
+    }
+
     footer {
       text-align: center;
       margin-top: 2em;
-      color: #0f0;
+      color: #00ff00;
     }
   </style>
 </head>
 <body>
+
   <header>
     <h1>> bitbyt3s // hacker comics archive</h1>
     <p>Welcome to the underground comic drop zone.</p>
   </header>
+
   <nav>
     <a href="#">Home</a>
     <a href="#comics">Comics</a>
     <a href="#about">About</a>
   </nav>
+
   <div class="terminal-box" id="comics">
     <h2>> issue archive</h2>
     <div class="comic-list">
-      <a href="comics/issue01.pdf" target="_blank">[+] Issue 01: Terminal Rebellion</a><br>
-      <a href="downloads/p1.png" download>&nbsp;&nbsp;&nbsp;Download Page 1 Preview (p1.png)</a><br>
+      <a href="downloads/issue01.pdf" target="_blank">[+] Issue 01: Terminal Rebellion</a>
+      <a href="downloads/p1.png" download>&nbsp;&nbsp;&nbsp;Download Page 1 Preview (p1.png)</a>
       <a href="downloads/issue02.pdf" target="_blank">[+] Issue 02: Binary Ghost</a>
-      <a href="/comics/issue02.pdf" target="_blank">[+] Issue 02: Binary Ghost</a>
-      <!-- Add more issues here -->
     </div>
   </div>
+
   <div class="terminal-box" id="about">
     <h2>> about</h2>
     <p>This site is a drop for an underground hacker comic series—blending cyberpunk, code, and easter eggs. Dig deep. You might find more than comics.</p>
   </div>
+
   <footer>
     <p>// site by bitbyt3s | coded in the shadows</p>
   </footer>
+
   <script>
     console.log("Pssst. Inspect elements and dig around. Clues are everywhere.");
   </script>
+
 </body>
 </html>
+
