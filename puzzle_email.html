@@ -116,6 +116,10 @@
   <!-- Matrix background canvas -->
   <canvas id="matrixCanvas"></canvas>
 
+  <!-- Audio: boot + typing -->
+  <audio id="bootSound" src="sounds/boot.mp3" preload="auto"></audio>
+  <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
+
   <h1>> Hidden Email Puzzle</h1>
 
   <!-- Puzzle section -->
@@ -185,7 +189,6 @@
         drops[i]++;
       }
     }
-
     setInterval(drawMatrix, 50);
 
     // handle screen resize
@@ -195,14 +198,28 @@
     };
 
     /******************************************************
-     * 2) Puzzle passcode logic
+     * 2) Audio + puzzle passcode logic
      ******************************************************/
+    const bootSound = document.getElementById('bootSound');
+    const typeSound = document.getElementById('typeSound');
+
+    // Play boot sound on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      if (bootSound) {
+        bootSound.play().catch(() => {});
+      }
+    });
+
     function checkPuzzle() {
       const passInput = document.getElementById('puzzlePass');
       const passVal = passInput.value.trim().toLowerCase();
 
       // For example, passcode is "emailaddress"
       if (passVal === 'emailaddress') {
+        // Play typing sound on success
+        if (typeSound) {
+          typeSound.play().catch(() => {});
+        }
         alert("Correct passcode! Revealing signup form...");
         document.getElementById('signupForm').style.display = 'block';
       } else {
