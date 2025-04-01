@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BitByt3s // Email Puzzle</title>
+  <style>
+    body {
+      background-color: black;
+      color: #00ff00;
+      font-family: monospace;
+      text-align: center;
+      padding: 40px;
+    }
+    .puzzle, .signup-form {
+      border: 1px solid #00ff00;
+      padding: 20px;
+      margin: 30px auto;
+      max-width: 600px;
+      background-color: rgba(0,0,0,0.85);
+    }
+    input, textarea {
+      width: 100%;
+      margin-bottom: 10px;
+      background-color: black;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      font-family: monospace;
+    }
+    button {
+      background-color: black;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      padding: 8px 16px;
+      font-family: monospace;
+      cursor: pointer;
+    }
+    button:hover {
+      text-shadow: 0 0 5px #00ff00;
+    }
+    .signup-form {
+      display: none; /* hidden until puzzle pass is correct */
+    }
+  </style>
+</head>
+<body>
+
+  <h1>> Hidden Email Puzzle</h1>
+
+  <div class="puzzle">
+    <h2>> Solve to Unlock the Email Signup</h2>
+    <p>Riddle: "I'm electronic, I'm essential. I'm known as snail mail's high-tech sibling."</p>
+    <p><em>Hint: It's two words merged into one, all lowercase!</em></p>
+
+    <label for="puzzlePass">Enter Passcode:</label>
+    <input id="puzzlePass" type="text" placeholder="Type your guess...">
+    <button onclick="checkPuzzle()">Unlock</button>
+  </div>
+
+  <div class="signup-form" id="signupForm">
+    <h2>> Newsletter / Email List</h2>
+    <p>Nice work! Enter your info below to join the list:</p>
+    <form action="https://formspree.io/f/xnnpberb" method="POST">
+      <label for="email">Email:</label>
+      <input type="email" name="email" id="email" required>
+
+      <label for="msg">Message:</label>
+      <textarea name="message" id="msg"></textarea>
+
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    function checkPuzzle() {
+      const passInput = document.getElementById('puzzlePass');
+      const passVal = passInput.value.trim().toLowerCase();
+
+      // For example passcode is "emailaddress"
+      if (passVal === 'emailaddress') {
+        alert("Correct passcode! Revealing signup form...");
+        document.getElementById('signupForm').style.display = 'block';
+      } else {
+        alert("❌ Wrong passcode. Try again!");
+      }
+    }
+  </script>
+
+</body>
+</html>
