@@ -90,10 +90,11 @@
 </head>
 <body>
 
-  <!-- 🔐 Hidden source clue -->
+  <!-- 🔐 Hidden Source Clues -->
   <!-- vault hint: control the shift of history -->
   <!-- try key combo -->
 
+  <!-- AUDIO -->
   <audio id="bootSound" src="sounds/boot.mp3" preload="auto"></audio>
   <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
 
@@ -111,7 +112,7 @@
   <div class="terminal-box">
     <p>Use the tabs above to explore issues and lore. This is the main zone. Expect more soon.</p>
 
-    <!-- 🧩 Visual Puzzle Clue -->
+    <!-- 🧩 Visual Puzzle Hint -->
     <div style="margin-top: 60px; color: #00ff00; font-family:monospace; font-size:14px;">
       >> access method required  
       <br>
@@ -162,16 +163,23 @@
             width += 2;
             bar.style.width = width + '%';
             if (typeSound) typeSound.play().catch(() => {});
+
+            if (width === 60) {
+              status.textContent = "→ Injecting passkey...";
+            } else if (width === 66) {
+              status.textContent = "→ Passkey = karatechop";
+            } else if (width > 50 && width < 70 && width !== 60 && width !== 66) {
+              status.textContent = "Bypassing firewalls...";
+            } else if (width > 70 && width < 95) {
+              status.textContent = "Decrypting access key...";
+            }
+
             if (width >= 100) {
               clearInterval(interval);
               status.textContent = "Redirecting to secure vault...";
               setTimeout(() => {
                 window.location.href = "https://bitbyt3s.github.io/secret.html";
               }, 1000);
-            } else if (width > 50 && width < 70) {
-              status.textContent = "Bypassing firewalls...";
-            } else if (width > 70 && width < 95) {
-              status.textContent = "Decrypting access key...";
             }
           }, 60);
         }
