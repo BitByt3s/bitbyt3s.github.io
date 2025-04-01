@@ -74,7 +74,10 @@
 </head>
 <body>
 
-  <!-- SOUND FX -->
+  <!-- 🔐 Hidden Clue -->
+  <!-- "The truth is archived in the past..." -->
+  <!-- Shift your control of history. -->
+
   <audio id="bootSound" src="sounds/boot.mp3" preload="auto"></audio>
   <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
 
@@ -91,6 +94,12 @@
 
   <div class="terminal-box">
     <p>This site is a drop for an underground hacker comic series—blending cyberpunk, code, and easter eggs. Dig deep. You might find more than comics.</p>
+
+    <!-- 🧩 Visual Puzzle Hint -->
+    <div style="margin-top: 40px; color: #00ff00; font-size: 14px;">
+      >> legacy access protocol: inactive  
+      <br><span style="opacity: 0.6;">// “The truth is archived in the past...”</span>
+    </div>
   </div>
 
   <footer>
@@ -111,6 +120,10 @@
       const bootSound = document.getElementById('bootSound');
       const typeSound = document.getElementById('typeSound');
       if (bootSound) bootSound.play().catch(() => {});
+
+      // 🖥 Console clue
+      console.log("%c>> Access protocol is offline.", "color: #00ff00; font-family: monospace");
+      console.log("%c// “The truth is archived in the past...”", "color: #00ff00; font-family: monospace");
 
       document.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.shiftKey && (e.key === 'h' || e.key === 'H')) {
