@@ -64,55 +64,6 @@
       40%, 80% { text-shadow: 2px 0 4px #00ff00; }
     }
 
-    #redirectOverlay, #accessNodeOverlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: black;
-      color: #00ff00;
-      font-family: monospace;
-      z-index: 9999;
-      text-align: center;
-      padding-top: 10%;
-    }
-
-    #redirectOverlay::after, #accessNodeOverlay::after {
-      content: "";
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(0, 255, 0, 0.03),
-        rgba(0, 255, 0, 0.03) 1px,
-        transparent 1px,
-        transparent 2px
-      );
-      pointer-events: none;
-      animation: flicker 0.15s infinite;
-    }
-
-    @keyframes flicker {
-      0%, 100% { opacity: 0.95; }
-      50% { opacity: 0.85; }
-    }
-
-    #hiddenPuzzleBtn {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      opacity: 0.05;
-      font-family: monospace;
-      z-index: 10000;
-    }
-
-    #hiddenPuzzleBtn:hover {
-      opacity: 1 !important;
-      text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
-      transition: all 0.2s ease-in-out;
-    }
-
     .logo-footer {
       margin-top: 60px;
       text-align: center;
@@ -160,19 +111,19 @@
     <p>// site by bitbyt3s | coded in the shadows</p>
   </footer>
 
-  <!-- 👁️ Hidden Puzzle Button -->
-  <div id="hiddenPuzzleBtn">
-    <a href="#" onclick="triggerAccessNode(); return false;" style="color:#00ff00; text-decoration:none; font-size:12px;">
+  <!-- Hidden Puzzle Button -->
+  <div id="accessNodeLink" style="position: fixed; bottom: 10px; right: 10px; opacity: 0.05; z-index: 10000;">
+    <a href="#" style="color:#00ff00; text-decoration:none; font-size:12px;">
       [ access node ]
     </a>
   </div>
 
-  <!-- 👁️ Logo Footer -->
+  <!-- Logo Footer -->
   <div class="logo-footer">
     <img src="assets/logo.png" alt="bitbyt3s logo" />
   </div>
 
-  <!-- Loaders + Matrix Script -->
+  <!-- Matrix + Hotkeys -->
   <script>
     const canvas = document.getElementById("matrixCanvas");
     const ctx = canvas.getContext("2d");
@@ -189,7 +140,6 @@
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = "#0F0";
       ctx.font = fontSize + "px monospace";
-
       for (let i = 0; i < drops.length; i++) {
         const text = letters.charAt(Math.floor(Math.random() * letters.length));
         ctx.fillText(text, i * fontSize, drops[i] * fontSize);
@@ -209,57 +159,31 @@
       const typeSound = document.getElementById('typeSound');
       if (bootSound) bootSound.play().catch(() => {});
 
+      // Ctrl + Shift + H
       document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && (e.key === 'h' || e.key === 'H')) {
-          const overlay = document.getElementById('redirectOverlay');
-          const bar = document.getElementById('barFill');
-          const status = document.getElementById('statusMsg');
-          overlay.style.display = 'block';
-
-          let width = 0;
-          const interval = setInterval(() => {
-            width += 2;
-            bar.style.width = width + '%';
-            if (typeSound) typeSound.play().catch(() => {});
-            if (width === 60) status.textContent = "→ Injecting passkey...";
-            else if (width === 66) status.textContent = "→ Passkey = karatechop";
-            else if (width > 70 && width < 95) status.textContent = "Decrypting access key...";
-            if (width >= 100) {
-              clearInterval(interval);
-              status.textContent = "Redirecting to secure vault...";
-              setTimeout(() => {
-                window.location.href = "secret.html";
-              }, 1000);
-            }
-          }, 60);
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'h') {
+          e.preventDefault();
+          if (typeSound) typeSound.play().catch(() => {});
+          alert("CTRL+SHIFT+H detected ✅\nRedirecting to hidden vault...");
+          setTimeout(() => {
+            window.location.href = "secret.html";
+          }, 1000);
         }
       });
-    };
 
-    function triggerAccessNode() {
-      const overlay = document.getElementById('accessNodeOverlay');
-      const bar = document.getElementById('accessBarFill');
-      const status = document.getElementById('accessStatus');
-      const typeSound = document.getElementById('typeSound');
-      overlay.style.display = 'block';
-
-      let width = 0;
-      const interval = setInterval(() => {
-        width += 2;
-        bar.style.width = width + '%';
-        if (typeSound) typeSound.play().catch(() => {});
-        if (width === 40) status.textContent = "→ Injecting secondary key...";
-        else if (width === 55) status.textContent = "→ Secondary key = dubstep";
-        else if (width > 60 && width < 90) status.textContent = "Verifying chain integrity...";
-        if (width >= 100) {
-          clearInterval(interval);
-          status.textContent = "Redirecting to puzzle vault...";
+      // Access Node Click
+      const accessNode = document.getElementById('accessNodeLink');
+      if (accessNode) {
+        accessNode.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (typeSound) typeSound.play().catch(() => {});
+          alert("Access Node detected ✅\nUnlocking riddle chamber...");
           setTimeout(() => {
             window.location.href = "puzzle.html";
           }, 1000);
-        }
-      }, 80);
-    }
+        });
+      }
+    };
   </script>
 
 </body>
