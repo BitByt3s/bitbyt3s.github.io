@@ -55,7 +55,6 @@
       40%, 80% { text-shadow: 2px 0 4px #00ff00; }
     }
 
-    /* CRT Flicker */
     #redirectOverlay::after {
       content: "";
       position: absolute;
@@ -80,7 +79,10 @@
 </head>
 <body>
 
-  <!-- SOUND FX -->
+  <!-- 🔐 Hidden Clue -->
+  <!-- You found it. CTRL + SHIFT + ??? -->
+  <!-- hint: key combo opens the vault -->
+
   <audio id="bootSound" src="sounds/boot.mp3" preload="auto"></audio>
   <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
 
@@ -99,6 +101,12 @@
     <h2>> downloads</h2>
     <div class="comic-list">
       <a href="downloads/issue01.png" download>[+] Download Issue 01: Terminal Rebellion (PNG)</a>
+    </div>
+
+    <!-- 🧩 Visual Puzzle Hint -->
+    <div style="margin-top: 40px; color: #00ff00; font-size: 14px;">
+      >> Archive status: locked  
+      <br><span style="opacity: 0.6;">// unlock with combo key...</span>
     </div>
   </div>
 
@@ -120,6 +128,10 @@
       const bootSound = document.getElementById('bootSound');
       const typeSound = document.getElementById('typeSound');
       if (bootSound) bootSound.play().catch(() => {});
+
+      // 🖥 Console hint
+      console.log("%c>> Comics archive secure.", "color: #00ff00; font-family: monospace");
+      console.log("%c// Hint: Press Ctrl + Shift + H to unlock...", "color: #00ff00; font-family: monospace");
 
       document.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.shiftKey && (e.key === 'h' || e.key === 'H')) {
