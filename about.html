@@ -70,6 +70,22 @@
       0%, 100% { opacity: 0.95; }
       50% { opacity: 0.85; }
     }
+
+    /* 👁️ Hidden puzzle node */
+    #hiddenPuzzleBtn {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      opacity: 0.05;
+      font-family: monospace;
+      z-index: 10000;
+    }
+
+    #hiddenPuzzleBtn:hover {
+      opacity: 1 !important;
+      text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+      transition: all 0.2s ease-in-out;
+    }
   </style>
 </head>
 <body>
@@ -106,8 +122,15 @@
     <p>// site by bitbyt3s | coded in the shadows</p>
   </footer>
 
+  <!-- 👁️ Hidden Puzzle Button -->
+  <div id="hiddenPuzzleBtn">
+    <a href="puzzle.html" style="color:#00ff00; text-decoration:none; font-size:12px;">
+      [ access node ]
+    </a>
+  </div>
+
   <!-- HACKER REDIRECT OVERLAY -->
-  <div id="redirectOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:#00ff00; z-index:9999; font-family:monospace; text-align:center; padding-top:10%; position:fixed;">
+  <div id="redirectOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:#00ff00; z-index:9999; font-family:monospace; text-align:center; padding-top:10%;">
     <h1>> Accessing hidden archive...</h1>
     <div id="loadingBar" style="margin: 30px auto; width: 80%; height: 20px; border: 1px solid #00ff00; background-color: black; position: relative;">
       <div id="barFill" style="height: 100%; width: 0%; background-color: #00ff00;"></div>
@@ -121,7 +144,6 @@
       const typeSound = document.getElementById('typeSound');
       if (bootSound) bootSound.play().catch(() => {});
 
-      // 🖥 Console clue
       console.log("%c>> Access protocol is offline.", "color: #00ff00; font-family: monospace");
       console.log("%c// “The truth is archived in the past...”", "color: #00ff00; font-family: monospace");
 
