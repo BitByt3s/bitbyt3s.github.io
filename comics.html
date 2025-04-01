@@ -76,7 +76,6 @@
       50% { opacity: 0.85; }
     }
 
-    /* 👁️ Hidden puzzle node */
     #hiddenPuzzleBtn {
       position: fixed;
       bottom: 10px;
@@ -95,9 +94,9 @@
 </head>
 <body>
 
-  <!-- 👁️ Hidden Clue -->
-  <!-- You found it. CTRL + SHIFT + ??? -->
-  <!-- hint: key combo opens the vault -->
+  <!-- 🔐 Hidden clues -->
+  <!-- ctrl + shift + h -->
+  <!-- vault passkey = karatechop -->
 
   <audio id="bootSound" src="sounds/boot.mp3" preload="auto"></audio>
   <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
@@ -119,7 +118,6 @@
       <a href="downloads/issue01.png" download>[+] Download Issue 01: Terminal Rebellion (PNG)</a>
     </div>
 
-    <!-- 🧩 Visual Puzzle Hint -->
     <div style="margin-top: 40px; color: #00ff00; font-size: 14px;">
       >> Archive status: locked  
       <br><span style="opacity: 0.6;">// unlock with combo key...</span>
@@ -130,7 +128,6 @@
     <p>// site by bitbyt3s | coded in the shadows</p>
   </footer>
 
-  <!-- 👁️ Hidden Puzzle Button -->
   <div id="hiddenPuzzleBtn">
     <a href="puzzle.html" style="color:#00ff00; text-decoration:none; font-size:12px;">
       [ access node ]
@@ -167,16 +164,23 @@
             width += 2;
             bar.style.width = width + '%';
             if (typeSound) typeSound.play().catch(() => {});
+
+            if (width === 60) {
+              status.textContent = "→ Injecting passkey...";
+            } else if (width === 66) {
+              status.textContent = "→ Passkey = karatechop";
+            } else if (width > 50 && width < 70 && width !== 60 && width !== 66) {
+              status.textContent = "Bypassing firewalls...";
+            } else if (width > 70 && width < 95) {
+              status.textContent = "Decrypting access key...";
+            }
+
             if (width >= 100) {
               clearInterval(interval);
               status.textContent = "Redirecting to secure vault...";
               setTimeout(() => {
                 window.location.href = "https://bitbyt3s.github.io/secret.html";
               }, 1000);
-            } else if (width > 50 && width < 70) {
-              status.textContent = "Bypassing firewalls...";
-            } else if (width > 70 && width < 95) {
-              status.textContent = "Decrypting access key...";
             }
           }, 60);
         }
