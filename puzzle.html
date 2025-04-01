@@ -135,7 +135,6 @@
 
   <!-- Puzzle zone -->
   <div id="puzzleZone" class="hidden">
-
     <p>Each riddle unlocks a hidden dubstep track. Type your answer to continue.</p>
 
     <!-- Puzzle 1 -->
@@ -171,6 +170,13 @@
 
   <a class="back-home" href="index.html">← Back to Home</a>
 
+  <!-- Hidden Puzzle Button -->
+  <div id="accessNodeLink" style="position: fixed; bottom: 10px; right: 10px; opacity: 0.05; z-index: 10000;">
+    <a href="#" style="color:#00ff00; text-decoration:none; font-size:12px;">
+      [ access node ]
+    </a>
+  </div>
+
   <!-- Logo Footer -->
   <div class="logo-footer">
     <img src="assets/logo.png" alt="bitbyt3s logo" />
@@ -181,7 +187,6 @@
     const ctx = canvas.getContext("2d");
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
-
     const letters = "01";
     const fontSize = 16;
     const columns = canvas.width / fontSize;
@@ -192,7 +197,6 @@
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = "#0F0";
       ctx.font = fontSize + "px monospace";
-
       for (let i = 0; i < drops.length; i++) {
         const text = letters.charAt(Math.floor(Math.random() * letters.length));
         ctx.fillText(text, i * fontSize, drops[i] * fontSize);
@@ -224,11 +228,9 @@
         1: "enemy",
         2: "where we go at night"
       };
-
       const input = document.getElementById("answer" + puzzleNumber);
       const guess = input.value.trim().toLowerCase();
       const correct = answers[puzzleNumber];
-
       if (guess === correct) {
         document.getElementById("link" + puzzleNumber).style.display = "block";
         const typeSound = document.getElementById("typeSound");
@@ -240,6 +242,33 @@
         alert("❌ Incorrect. Try again.");
       }
     }
+
+    window.onload = function () {
+      const typeSound = document.getElementById('typeSound');
+
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'h') {
+          e.preventDefault();
+          if (typeSound) typeSound.play().catch(() => {});
+          alert("CTRL+SHIFT+H detected ✅\nRedirecting to hidden vault...");
+          setTimeout(() => {
+            window.location.href = "secret.html";
+          }, 1000);
+        }
+      });
+
+      const accessNode = document.getElementById('accessNodeLink');
+      if (accessNode) {
+        accessNode.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (typeSound) typeSound.play().catch(() => {});
+          alert("Access Node detected ✅\nUnlocking riddle chamber...");
+          setTimeout(() => {
+            window.location.href = "puzzle.html";
+          }, 1000);
+        });
+      }
+    };
   </script>
 
 </body>
