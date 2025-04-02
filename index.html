@@ -36,8 +36,9 @@
     }
 
     #cipherGate h1 {
-      font-size: 20px;
-      animation: glitch 1.2s infinite;
+      font-size: 24px;
+      margin-bottom: 10px;
+      animation: glitch 1.5s infinite;
     }
 
     #cipherGate input {
@@ -47,7 +48,7 @@
       font-family: monospace;
       font-size: 16px;
       padding: 10px;
-      margin-top: 20px;
+      margin-top: 10px;
     }
 
     #cipherGate button {
@@ -150,7 +151,8 @@
 <canvas id="matrixCanvas"></canvas>
 
 <div id="cipherGate">
-  <h1>Decrypt to access: <br><br> <span>P#el$cg%vp P*bz@vp#f</span></h1>
+  <h1 id="glitchCipher">#@!$%^&*()_+=</h1>
+  <p>Decrypt the phrase to gain access:</p>
   <input type="text" id="cipherInput" placeholder="Enter your decryption..." />
   <button onclick="validateCipher()">Submit</button>
 </div>
@@ -179,6 +181,29 @@
 </div>
 
 <script>
+// Animate glitch to reveal cipher
+window.onload = () => {
+  const finalCipher = "Pelcgvp Pbzvpf";
+  const glitchChars = "!@#$%^&*()_+=<>?~";
+  const el = document.getElementById("glitchCipher");
+  let revealed = "";
+  let i = 0;
+
+  const glitchInterval = setInterval(() => {
+    if (i < finalCipher.length) {
+      revealed += finalCipher[i];
+      const remaining = Array.from({ length: finalCipher.length - i - 1 })
+        .map(() => glitchChars[Math.floor(Math.random() * glitchChars.length)])
+        .join("");
+      el.textContent = revealed + remaining;
+      i++;
+    } else {
+      el.textContent = finalCipher;
+      clearInterval(glitchInterval);
+    }
+  }, 100);
+};
+
 function validateCipher() {
   const input = document.getElementById("cipherInput").value.trim().toLowerCase();
   if (input === "cryptic comics") {
@@ -228,6 +253,7 @@ function navigateWithLoader(destination, messages) {
   }, 100);
 }
 
+// Keyboard shortcuts
 document.addEventListener("keydown", function (e) {
   if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "h") {
     launchLoader(() => {
@@ -239,6 +265,7 @@ document.addEventListener("keydown", function (e) {
       }
     });
   }
+
   if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "e") {
     navigateWithLoader("puzzle_email.html", ['[ email gate opening... ]', '[ PASSWORD: emailaddress ]']);
   }
