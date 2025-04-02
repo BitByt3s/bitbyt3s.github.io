@@ -10,11 +10,10 @@
       padding: 0;
       background: black;
       color: #00ff00;
-      font-family: monospace;
+      font-family: 'Courier New', monospace;
       overflow: hidden;
     }
 
-    /* Background Scene */
     #introScene {
       position: fixed;
       top: 0; left: 0;
@@ -26,7 +25,18 @@
       animation: fadeOut 2s ease-in-out 8s forwards;
     }
 
-    /* Knight Animation */
+    #welcomeBanner {
+      position: fixed;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 24px;
+      color: #00ff00;
+      z-index: 3;
+      text-shadow: 0 0 5px #00ff00;
+      animation: flicker 1.5s infinite;
+    }
+
     #walker {
       position: absolute;
       bottom: 30px;
@@ -50,7 +60,11 @@
       }
     }
 
-    /* Cipher Gate */
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
     #cipherGate {
       display: none;
       flex-direction: column;
@@ -58,7 +72,7 @@
       align-items: center;
       height: 100vh;
       text-align: center;
-      z-index: 3;
+      z-index: 4;
     }
 
     #cipherGate h1 {
@@ -93,7 +107,6 @@
       40%, 80% { text-shadow: 2px 0 4px #00ff00; }
     }
 
-    /* Loader */
     #loaderOverlay {
       display: none;
       flex-direction: column;
@@ -104,7 +117,7 @@
       width: 100%;
       height: 100%;
       background-color: black;
-      z-index: 4;
+      z-index: 5;
       color: #00ff00;
       font-size: 16px;
     }
@@ -125,10 +138,13 @@
 </head>
 <body>
 
-<!-- Background Scene -->
+<!-- Background -->
 <div id="introScene"></div>
 
-<!-- Knight Walking -->
+<!-- Welcome Text -->
+<div id="welcomeBanner">WELCOME BACK, HUMAN</div>
+
+<!-- Knight Sprite -->
 <img src="assets/walker.gif" id="walker" alt="hacker-knight" />
 
 <!-- Cipher Gate -->
@@ -139,23 +155,21 @@
   <button onclick="validateCipher()">Submit</button>
 </div>
 
-<!-- Loader -->
+<!-- Terminal Loader -->
 <div id="loaderOverlay">
   <div>[ SYSTEM UNLOCKING... ]</div>
   <div id="progressBar"><div id="barFill"></div></div>
 </div>
 
-<!-- Optional Music -->
-<audio id="introMusic" src="assets/intro.mp3" preload="auto" autoplay loop></audio>
+<!-- Audio -->
+<audio id="introMusic" src="assets/intro.mp3" preload="auto" loop></audio>
 
 <script>
-// Glitch Reveal
 window.onload = () => {
   const finalCipher = "Pelcgvp Pbzvpf";
   const glitchChars = "!@#$%^&*()_+=<>?~";
   const el = document.getElementById("glitchCipher");
-  let revealed = "";
-  let i = 0;
+  let revealed = "", i = 0;
 
   const glitchInterval = setInterval(() => {
     if (i < finalCipher.length) {
@@ -171,7 +185,7 @@ window.onload = () => {
     }
   }, 100);
 
-  // Knight Animation Ends
+  // Knight finishes walk
   const knight = document.getElementById("walker");
   knight.addEventListener("animationend", () => {
     knight.style.display = "none";
@@ -181,9 +195,22 @@ window.onload = () => {
       fadeOutMusic();
     }, 1000);
   });
+
+  // Music autoplay workaround
+  const audio = document.getElementById("introMusic");
+  audio.volume = 1;
+  audio.play().catch(() => {
+    const unlockAudio = () => {
+      audio.play().catch(() => {});
+      document.removeEventListener("click", unlockAudio);
+      document.removeEventListener("keydown", unlockAudio);
+    };
+    document.addEventListener("click", unlockAudio);
+    document.addEventListener("keydown", unlockAudio);
+  });
 };
 
-// Fade Music
+// Fade out music
 function fadeOutMusic() {
   const music = document.getElementById("introMusic");
   const fadeAudio = setInterval(() => {
@@ -196,7 +223,7 @@ function fadeOutMusic() {
   }, 200);
 }
 
-// Cipher Unlock
+// Cipher check
 function validateCipher() {
   const input = document.getElementById("cipherInput").value.trim().toLowerCase();
   if (input === "cryptic comics") {
@@ -206,7 +233,7 @@ function validateCipher() {
   }
 }
 
-// Terminal Redirect
+// Terminal style loader
 function launchLoader() {
   document.getElementById("cipherGate").style.display = "none";
   const overlay = document.getElementById("loaderOverlay");
@@ -226,3 +253,4 @@ function launchLoader() {
 </script>
 </body>
 </html>
+
