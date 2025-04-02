@@ -14,7 +14,7 @@
       overflow: hidden;
     }
 
-    /* Background GIF full screen */
+    /* Background Scene */
     #introScene {
       position: fixed;
       top: 0; left: 0;
@@ -26,14 +26,16 @@
       animation: fadeOut 2s ease-in-out 8s forwards;
     }
 
-    /* Knight walk animation */
+    /* Knight Animation */
     #walker {
       position: absolute;
       bottom: 30px;
       left: -150px;
-      height: 120px;
+      transform: scale(1.5);
+      transform-origin: bottom left;
       z-index: 2;
       animation: walkAcross 8s linear forwards;
+      filter: drop-shadow(8px 6px 2px rgba(0, 255, 0, 0.3));
     }
 
     @keyframes walkAcross {
@@ -48,7 +50,7 @@
       }
     }
 
-    /* Cipher gate section */
+    /* Cipher Gate */
     #cipherGate {
       display: none;
       flex-direction: column;
@@ -91,7 +93,7 @@
       40%, 80% { text-shadow: 2px 0 4px #00ff00; }
     }
 
-    /* Loader overlay */
+    /* Loader */
     #loaderOverlay {
       display: none;
       flex-direction: column;
@@ -126,7 +128,7 @@
 <!-- Background Scene -->
 <div id="introScene"></div>
 
-<!-- Knight walking -->
+<!-- Knight Walking -->
 <img src="assets/walker.gif" id="walker" alt="hacker-knight" />
 
 <!-- Cipher Gate -->
@@ -143,10 +145,11 @@
   <div id="progressBar"><div id="barFill"></div></div>
 </div>
 
-<!-- Optional intro music -->
+<!-- Optional Music -->
 <audio id="introMusic" src="assets/intro.mp3" preload="auto" autoplay loop></audio>
 
 <script>
+// Glitch Reveal
 window.onload = () => {
   const finalCipher = "Pelcgvp Pbzvpf";
   const glitchChars = "!@#$%^&*()_+=<>?~";
@@ -168,7 +171,7 @@ window.onload = () => {
     }
   }, 100);
 
-  // When knight finishes walking, fade in cipher gate
+  // Knight Animation Ends
   const knight = document.getElementById("walker");
   knight.addEventListener("animationend", () => {
     knight.style.display = "none";
@@ -180,7 +183,7 @@ window.onload = () => {
   });
 };
 
-// Fade out music
+// Fade Music
 function fadeOutMusic() {
   const music = document.getElementById("introMusic");
   const fadeAudio = setInterval(() => {
@@ -193,7 +196,7 @@ function fadeOutMusic() {
   }, 200);
 }
 
-// Cipher checker
+// Cipher Unlock
 function validateCipher() {
   const input = document.getElementById("cipherInput").value.trim().toLowerCase();
   if (input === "cryptic comics") {
@@ -203,7 +206,7 @@ function validateCipher() {
   }
 }
 
-// Loader and redirect
+// Terminal Redirect
 function launchLoader() {
   document.getElementById("cipherGate").style.display = "none";
   const overlay = document.getElementById("loaderOverlay");
@@ -221,6 +224,5 @@ function launchLoader() {
   }, 80);
 }
 </script>
-
 </body>
 </html>
