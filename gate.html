@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>bitbyt3s // Entry Gate</title>
+  <title>bitbyt3s // Access Gate</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
@@ -96,6 +96,9 @@
 
 <canvas id="matrixCanvas"></canvas>
 
+<!-- Background Music -->
+<audio id="gateMusic" src="sounds/intro.mp3" preload="auto" loop></audio>
+
 <div id="cipherGate">
   <h1 id="glitchCipher">#@!%$@!@^*(&%</h1>
   <p>Decrypt the phrase above to proceed:</p>
@@ -109,7 +112,7 @@
 </div>
 
 <script>
-// Animate glitch-to-cipher reveal
+// Glitch-to-cipher animation
 window.onload = () => {
   const finalCipher = "Pelcgvp Pbzvpf";
   const glitchChars = "!@#$%^&*()_+=<>?~";
@@ -132,7 +135,7 @@ window.onload = () => {
   }, 100);
 };
 
-// Cipher check
+// Cipher validation
 function validateCipher() {
   const input = document.getElementById("cipherInput").value.trim().toLowerCase();
   if (input === "cryptic comics") {
@@ -142,7 +145,7 @@ function validateCipher() {
   }
 }
 
-// Terminal loader & redirect
+// Loader and redirect
 function launchLoader() {
   document.getElementById("cipherGate").style.display = "none";
   const overlay = document.getElementById("loaderOverlay");
@@ -159,7 +162,7 @@ function launchLoader() {
   }, 80);
 }
 
-// Matrix FX
+// Matrix background
 const canvas = document.getElementById("matrixCanvas");
 const ctx = canvas.getContext("2d");
 const letters = "01";
@@ -189,6 +192,18 @@ function drawMatrix() {
 window.addEventListener("resize", initMatrix);
 initMatrix();
 setInterval(drawMatrix, 50);
+
+// Music autoplay (with fallback)
+window.addEventListener("load", () => {
+  const music = document.getElementById("gateMusic");
+  if (music) {
+    music.volume = 0.6;
+    music.play().catch(() => {
+      console.log("Autoplay blocked. Waiting for user interaction.");
+    });
+  }
+});
 </script>
+
 </body>
 </html>
