@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>bitbyt3s // Entry Gate</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: black;
+      color: #00ff00;
+      font-family: monospace;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    #cipherGate {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 1;
+    }
+
+    #cipherGate h1 {
+      font-size: 24px;
+      animation: glitch 1s infinite;
+      margin-bottom: 20px;
+    }
+
+    #cipherGate input {
+      background: black;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      font-family: monospace;
+      font-size: 16px;
+      padding: 10px;
+      width: 300px;
+      text-align: center;
+    }
+
+    #cipherGate button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: black;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      cursor: pointer;
+    }
+
+    #loaderOverlay {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      z-index: 2;
+      color: #00ff00;
+      font-size: 16px;
+    }
+
+    #progressBar {
+      border: 1px solid #00ff00;
+      height: 20px;
+      width: 60%;
+      margin-top: 20px;
+    }
+
+    #barFill {
+      height: 100%;
+      width: 0%;
+      background: #00ff00;
+    }
+
+    @keyframes glitch {
+      0%, 100% { text-shadow: 1px 1px #00ff00; }
+      20%, 60% { text-shadow: -2px 0 2px #00ff00; }
+      40%, 80% { text-shadow: 2px 0 4px #00ff00; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="matrixCanvas"></canvas>
+
+<div id="cipherGate">
+  <h1 id="glitchCipher">#@!%$@!@^*(&%</h1>
+  <p>Decrypt the phrase above to proceed:</p>
+  <input type="text" id="cipherInput" placeholder="Enter decrypted phrase..." />
+  <button onclick="validateCipher()">Submit</button>
+</div>
+
+<div id="loaderOverlay">
+  <div>[ SYSTEM UNLOCKING... ]</div>
+  <div id="progressBar"><div id="barFill"></div></div>
+</div>
+
+<script>
+// Animate glitch-to-cipher reveal
+window.onload = () => {
+  const finalCipher = "Pelcgvp Pbzvpf";
+  const glitchChars = "!@#$%^&*()_+=<>?~";
+  const el = document.getElementById("glitchCipher");
+  let revealed = "";
+  let i = 0;
+
+  const glitchInterval = setInterval(() => {
+    if (i < finalCipher.length) {
+      revealed += finalCipher[i];
+      const remaining = Array.from({ length: finalCipher.length - i - 1 })
+        .map(() => glitchChars[Math.floor(Math.random() * glitchChars.length)])
+        .join("");
+      el.textContent = revealed + remaining;
+      i++;
+    } else {
+      el.textContent = finalCipher;
+      clearInterval(glitchInterval);
+    }
+  }, 100);
+};
+
+// Cipher check
+function validateCipher() {
+  const input = document.getElementById("cipherInput").value.trim().toLowerCase();
+  if (input === "cryptic comics") {
+    launchLoader();
+  } else {
+    alert("❌ Incorrect. Try again.");
+  }
+}
+
+// Terminal loader & redirect
+function launchLoader() {
+  document.getElementById("cipherGate").style.display = "none";
+  const overlay = document.getElementById("loaderOverlay");
+  const bar = document.getElementById("barFill");
+  overlay.style.display = "flex";
+  let progress = 0;
+  const intv = setInterval(() => {
+    progress += 2;
+    bar.style.width = progress + "%";
+    if (progress >= 100) {
+      clearInterval(intv);
+      window.location.href = "index.html";
+    }
+  }, 80);
+}
+
+// Matrix FX
+const canvas = document.getElementById("matrixCanvas");
+const ctx = canvas.getContext("2d");
+const letters = "01";
+const fontSize = 16;
+let drops;
+
+function initMatrix() {
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+  const columns = canvas.width / fontSize;
+  drops = Array.from({ length: columns }).fill(1);
+}
+
+function drawMatrix() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#0F0";
+  ctx.font = fontSize + "px monospace";
+  for (let i = 0; i < drops.length; i++) {
+    const text = letters.charAt(Math.floor(Math.random() * letters.length));
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+
+window.addEventListener("resize", initMatrix);
+initMatrix();
+setInterval(drawMatrix, 50);
+</script>
+</body>
+</html>
