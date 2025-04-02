@@ -169,6 +169,24 @@
       text-decoration: none;
       font-size: 12px;
     }
+
+    #videoOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #videoOverlay video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   </style>
 </head>
 <body>
@@ -185,11 +203,12 @@
 <h1>> bitbyt3s // Riddle Node</h1>
 
 <nav>
-  <a onclick="navigateWithLoader('home.html', ['[ mainframe loaded... ]','[ PASSWORD: xnengrpbcu ]'])">Home</a>
-  <a onclick="navigateWithLoader('comics.html', ['[ comic assets loaded... ]','[ PASSWORD: rebellion ]'])">Comics</a>
-  <a onclick="navigateWithLoader('about.html', ['[ identity check... ]','[ PASSWORD: legacyaccess ]'])">About</a>
+  <a onclick="navigateWithLoader('home.html', ['[ mainframe loaded... ]','[ ACCESS KEY: xnengrpbcu ]'])">Home</a>
+  <a onclick="navigateWithLoader('comics.html', ['[ comic assets loaded... ]','[ ACCESS KEY: erorvyyrra ]'])">Comics</a>
+  <a onclick="navigateWithLoader('about.html', ['[ identity check... ]','[ ACCESS KEY: yrtnpflnprff ]'])">About</a>
 </nav>
 
+<!-- Riddle Blocks -->
 <div class="puzzle-box">
   <h2>> Puzzle #1</h2>
   <p>"Born from conflict. Fed by fear. Named by war."</p>
@@ -223,14 +242,28 @@
   </div>
 </div>
 
+<!-- 🎉 Final Button -->
+<div id="congratsSection" style="display:none; margin-top:40px;">
+  <button onclick="playFinalVideo()">🎉 Congratulations – Watch the Final Message</button>
+</div>
+
+<!-- 🎥 Video Overlay -->
+<div id="videoOverlay">
+  <video id="finalVideo" autoplay muted>
+    <source src="assets/still alive.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+</div>
+
+<!-- Footer -->
 <div class="logo-footer">
   <img src="assets/logo.png" alt="bitbyt3s logo" />
 </div>
 
 <div id="accessNodeLink">
-  <a onclick="navigateWithLoader('puzzle_email.html', ['[ decrypting node... ]','[ PASSWORD: rznvyneqerff ]'])">[ access node ]</a>
+  <a onclick="navigateWithLoader('puzzle_email.html', ['[ decrypting node... ]','[ ACCESS KEY: rznvyneqerff ]'])">[ access node ]</a>
 </div>
-  
+
 <script>
 const answers = ['enemy', 'where we go at night', 'echoes of the flow'];
 
@@ -242,7 +275,11 @@ function checkRiddle(num) {
   if (input === answers[num - 1]) {
     showCorrectOverlay(() => {
       reward.classList.add('show');
-      if (boxNext) boxNext.style.display = 'block';
+      if (boxNext) {
+        boxNext.style.display = 'block';
+      } else {
+        document.getElementById('congratsSection').style.display = 'block';
+      }
     });
   } else {
     alert("❌ Try again.");
@@ -256,6 +293,23 @@ function showCorrectOverlay(callback) {
     overlay.style.display = "none";
     if (callback) callback();
   }, 1200);
+}
+
+function playFinalVideo() {
+  const overlay = document.getElementById('videoOverlay');
+  const video = document.getElementById('finalVideo');
+
+  overlay.style.display = 'flex';
+  video.muted = false;
+  video.play();
+
+  video.onended = () => {
+    overlay.style.transition = 'opacity 2s ease';
+    overlay.style.opacity = 0;
+    setTimeout(() => {
+      window.location.href = 'home.html';
+    }, 2000);
+  };
 }
 
 function navigateWithLoader(destination, messages) {
@@ -288,6 +342,7 @@ function navigateWithLoader(destination, messages) {
   }, 100);
 }
 
+// Ctrl+Shift+H for secret
 document.addEventListener("keydown", function (e) {
   if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "h") {
     const overlay = document.getElementById("terminalOverlay");
@@ -301,7 +356,7 @@ document.addEventListener("keydown", function (e) {
     const messages = [
       "[ establishing encrypted tunnel... ]",
       "[ fingerprint confirmed ]",
-      "[ PASSWORD: xnengrpbcu ]",
+      "[ ACCESS KEY: xnengrpbcu ]",
       "[ unlocking next layer... ]"
     ];
 
@@ -335,11 +390,11 @@ document.addEventListener("keydown", function (e) {
   }
 
   if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "e") {
-    navigateWithLoader('puzzle_email.html', ['[ unlocking email puzzle... ]', '[ PASSWORD: rznvyneqerff ]']);
+    navigateWithLoader('puzzle_email.html', ['[ unlocking email puzzle... ]', '[ ACCESS KEY: rznvyneqerff ]']);
   }
 });
 
-// Matrix background
+// Matrix Background
 const canvas = document.getElementById("matrixCanvas");
 const ctx = canvas.getContext("2d");
 canvas.height = window.innerHeight;
