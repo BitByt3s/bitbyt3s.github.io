@@ -170,22 +170,21 @@
       font-size: 12px;
     }
 
-    #videoOverlay {
+    #youtubeOverlay {
       display: none;
       position: fixed;
       top: 0; left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       background: black;
       z-index: 99999;
       justify-content: center;
       align-items: center;
     }
 
-    #videoOverlay video {
+    #youtubeOverlay iframe {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      border: none;
     }
   </style>
 </head>
@@ -208,7 +207,7 @@
   <a onclick="navigateWithLoader('about.html', ['[ identity check... ]','[ ACCESS KEY: yrtnpflnprff ]'])">About</a>
 </nav>
 
-<!-- Riddles -->
+<!-- Riddle 1 -->
 <div class="puzzle-box">
   <h2>> Puzzle #1</h2>
   <p>"Born from conflict. Fed by fear. Named by war."</p>
@@ -220,6 +219,7 @@
   </div>
 </div>
 
+<!-- Riddle 2 -->
 <div class="puzzle-box" id="box2" style="display:none;">
   <h2>> Puzzle #2</h2>
   <p>"It's not a place on any map. Only the moon and the quiet know. Where is it?"</p>
@@ -231,6 +231,7 @@
   </div>
 </div>
 
+<!-- Riddle 3 -->
 <div class="puzzle-box" id="box3" style="display:none;">
   <h2>> Puzzle #3</h2>
   <p>"The sound is gone. The pattern stays. What’s left?"</p>
@@ -242,17 +243,14 @@
   </div>
 </div>
 
-<!-- Final Reward Button -->
+<!-- Final reward -->
 <div id="congratsSection" style="display:none; margin-top:40px;">
   <button onclick="playFinalVideo()">🎉 Congratulations – Watch the Final Message</button>
 </div>
 
-<!-- Video Overlay -->
-<div id="videoOverlay">
-  <video id="finalVideo" autoplay>
-    <source src="assets/still_alive.mp4" type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
+<!-- YouTube Fullscreen Video -->
+<div id="youtubeOverlay">
+  <iframe id="ytPlayer" allow="autoplay; fullscreen" allowfullscreen></iframe>
 </div>
 
 <!-- Footer -->
@@ -295,32 +293,17 @@ function showCorrectOverlay(callback) {
   }, 1200);
 }
 
-// ✅ FINAL VIDEO LOGIC
+// 🎥 YouTube reward video logic
 function playFinalVideo() {
-  const overlay = document.getElementById('videoOverlay');
-  const video = document.getElementById('finalVideo');
+  const overlay = document.getElementById('youtubeOverlay');
+  const iframe = document.getElementById('ytPlayer');
 
   overlay.style.display = 'flex';
-  video.muted = false;
+  iframe.src = "https://www.youtube.com/embed/SXRteMSSZ14?autoplay=1&rel=0&modestbranding=1&enablejsapi=1";
 
-  const playPromise = video.play();
-  if (playPromise !== undefined) {
-    playPromise.then(() => {
-      // Good
-    }).catch(() => {
-      alert("🔇 Tap screen to start the video.");
-      video.muted = true;
-      video.play();
-    });
-  }
-
-  video.onended = () => {
-    overlay.style.transition = 'opacity 2s ease';
-    overlay.style.opacity = 0;
-    setTimeout(() => {
-      window.location.href = 'home.html';
-    }, 2000);
-  };
+  setTimeout(() => {
+    window.location.href = "home.html";
+  }, 125000); // fallback after ~2 mins
 }
 
 function navigateWithLoader(destination, messages) {
