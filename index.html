@@ -2,223 +2,161 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>bitbyt3s // Entry Gate</title>
+  <title>bitbyt3s // Home</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background-color: black;
+      background: black;
       color: #00ff00;
       font-family: monospace;
       overflow: hidden;
     }
 
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
-    }
-
-    #cipherGate {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      z-index: 1;
-    }
-
-    #cipherGate h1 {
-      font-size: 24px;
-      animation: glitch 1s infinite;
-      margin-bottom: 20px;
-    }
-
-    #cipherGate input {
-      background: black;
-      border: 1px solid #00ff00;
-      color: #00ff00;
-      font-family: monospace;
-      font-size: 16px;
-      padding: 10px;
-      width: 300px;
-      text-align: center;
-    }
-
-    #cipherGate button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: black;
-      color: #00ff00;
-      border: 1px solid #00ff00;
-      cursor: pointer;
-    }
-
-    #loaderOverlay {
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+    #introOverlay {
       position: fixed;
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      background-color: black;
-      z-index: 2;
-      color: #00ff00;
-      font-size: 16px;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
     }
 
-    #progressBar {
-      border: 1px solid #00ff00;
-      height: 20px;
-      width: 60%;
+    #scene {
+      width: 320px;
+      height: 200px;
+      background: url("assets/scene_bg.png") no-repeat center;
+      background-size: contain;
+      position: relative;
+    }
+
+    #hacker {
+      position: absolute;
+      bottom: 0;
+      left: -32px;
+      width: 32px;
+      height: 32px;
+      background: url("assets/hacker_walk.gif") no-repeat;
+      background-size: cover;
+      animation: walkAcross 4s linear forwards;
+    }
+
+    @keyframes walkAcross {
+      0% { left: -32px; }
+      80% { left: 120px; }
+      100% { left: 120px; background: url("assets/hacker_idle.png"); background-size: cover; }
+    }
+
+    #skipIntro {
       margin-top: 20px;
+      opacity: 0;
+      color: #00ff00;
+      font-size: 12px;
+      cursor: pointer;
+      animation: fadeIn 1s ease forwards;
+      animation-delay: 3s;
     }
 
-    #barFill {
-      height: 100%;
-      width: 0%;
-      background: #00ff00;
+    @keyframes fadeIn {
+      to { opacity: 0.6; }
     }
 
-    @keyframes glitch {
-      0%, 100% { text-shadow: 1px 1px #00ff00; }
-      20%, 60% { text-shadow: -2px 0 2px #00ff00; }
-      40%, 80% { text-shadow: 2px 0 4px #00ff00; }
+    #skipIntro:hover {
+      opacity: 1;
+      text-shadow: 0 0 10px #00ff00;
+    }
+
+    #mainContent {
+      display: none;
     }
   </style>
 </head>
 <body>
 
-<canvas id="matrixCanvas"></canvas>
-
-<div id="cipherGate">
-  <h1 id="glitchCipher">#@!%$@!@^*(&%</h1>
-  <p>Decrypt the phrase above to proceed:</p>
-  <input type="text" id="cipherInput" placeholder="Enter decrypted phrase..." />
-  <button onclick="validateCipher()">Submit</button>
+<!-- Intro Animation Overlay -->
+<div id="introOverlay">
+  <div id="scene">
+    <div id="hacker"></div>
+  </div>
+  <div id="skipIntro" onclick="endIntro()">[ skip intro ]</div>
 </div>
+<!-- Main Site Content -->
+<div id="mainContent">
+  <canvas id="matrixCanvas"></canvas>
 
-<div id="loaderOverlay">
-  <!-- Injected dynamically by script -->
+  <header style="padding: 30px;">
+    <h1>> bitbyt3s // hacker comics archive</h1>
+    <p>Welcome to the underground comic drop zone.</p>
+  </header>
+
+  <nav>
+    <a onclick="navigateWithLoader('comics.html', ['[ loading comics... ]', '[ archive unlocked... ]', '[ PASSWORD: rebellion ]'])">Comics</a>
+    <a onclick="navigateWithLoader('about.html', ['[ routing legacy path... ]', '[ validating identity... ]', '[ PASSWORD: legacyaccess ]'])">About</a>
+  </nav>
+
+  <div class="terminal-box" style="margin: 20px auto; max-width: 800px;">
+    <p>Use the tabs above to explore issues and lore. This is the main zone. Expect more soon.</p>
+    <div style="margin-top: 60px; font-size:14px;">
+      >> access method required  
+      <br><span style="opacity:0.6;">// hint: control the shift of history</span>
+    </div>
+  </div>
+
+  <footer style="margin-top: 2em;">
+    <p>// site by bitbyt3s | coded in the shadows</p>
+  </footer>
+
+  <div class="logo-footer" style="margin-top: 60px; text-align: center; opacity: 0.05;">
+    <img src="assets/logo.png" alt="bitbyt3s logo" style="max-width: 150px;" />
+  </div>
 </div>
 
 <script>
-// Animate glitch-to-cipher reveal
-window.onload = () => {
-  const finalCipher = "Pelcgvp Pbzvpf";
-  const glitchChars = "!@#$%^&*()_+=<>?~";
-  const el = document.getElementById("glitchCipher");
-  let revealed = "";
-  let i = 0;
-
-  const glitchInterval = setInterval(() => {
-    if (i < finalCipher.length) {
-      revealed += finalCipher[i];
-      const remaining = Array.from({ length: finalCipher.length - i - 1 })
-        .map(() => glitchChars[Math.floor(Math.random() * glitchChars.length)])
-        .join("");
-      el.textContent = revealed + remaining;
-      i++;
-    } else {
-      el.textContent = finalCipher;
-      clearInterval(glitchInterval);
-    }
-  }, 100);
-};
-
-// Cipher check
-function validateCipher() {
-  const input = document.getElementById("cipherInput").value.trim().toLowerCase();
-  if (input === "cryptic comics") {
-    launchLoader();
-  } else {
-    alert("❌ Incorrect. Try again.");
-  }
+function endIntro() {
+  document.getElementById("introOverlay").style.display = "none";
+  document.getElementById("mainContent").style.display = "block";
 }
 
-// Terminal loader with animated messages
-function launchLoader() {
-  document.getElementById("cipherGate").style.display = "none";
-  const overlay = document.getElementById("loaderOverlay");
-  const barHTML = `<div id="progressBar"><div id="barFill"></div></div>`;
-  overlay.style.display = "flex";
-  overlay.innerHTML = `<pre id="loaderText"></pre>${barHTML}`;
-  const loaderText = document.getElementById("loaderText");
-  const bar = document.getElementById("barFill");
+// Auto-fade after animation completes
+setTimeout(endIntro, 6000);
 
-  const messages = [
-    "[ SYSTEM UNLOCKING... ]",
-    "[ welcome back, human ]",
-    "[ loading main interface... ]"
-  ];
-
-  let msgIndex = 0;
-  function typeNextMessage() {
-    if (msgIndex >= messages.length) return;
-    let msg = messages[msgIndex];
-    let charIndex = 0;
-    const typeInterval = setInterval(() => {
-      loaderText.textContent += msg[charIndex];
-      charIndex++;
-      if (charIndex >= msg.length) {
-        clearInterval(typeInterval);
-        loaderText.textContent += "\n";
-        msgIndex++;
-        setTimeout(typeNextMessage, 700);
-      }
-    }, 30);
-  }
-
-  typeNextMessage();
-
-  let progress = 0;
-  const intv = setInterval(() => {
-    progress += 2;
-    bar.style.width = progress + "%";
-    if (progress >= 100) {
-      clearInterval(intv);
-      setTimeout(() => {
-        window.location.href = "home.html";
-      }, 1000);
-    }
-  }, 100);
-}
-
-// Matrix FX
+// Matrix background
 const canvas = document.getElementById("matrixCanvas");
-const ctx = canvas.getContext("2d");
-const letters = "01";
-const fontSize = 16;
-let drops;
-
-function initMatrix() {
+if (canvas) {
+  const ctx = canvas.getContext("2d");
   canvas.height = window.innerHeight;
   canvas.width = window.innerWidth;
+  const letters = "01";
+  const fontSize = 16;
   const columns = canvas.width / fontSize;
-  drops = Array.from({ length: columns }).fill(1);
-}
+  const drops = Array.from({ length: columns }).fill(1);
 
-function drawMatrix() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#0F0";
-  ctx.font = fontSize + "px monospace";
-  for (let i = 0; i < drops.length; i++) {
-    const text = letters.charAt(Math.floor(Math.random() * letters.length));
-    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-    drops[i]++;
+  function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#0F0";
+    ctx.font = fontSize + "px monospace";
+    for (let i = 0; i < drops.length; i++) {
+      const text = letters.charAt(Math.floor(Math.random() * letters.length));
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
   }
-}
 
-window.addEventListener("resize", initMatrix);
-initMatrix();
-setInterval(drawMatrix, 50);
+  setInterval(drawMatrix, 50);
+  window.onresize = () => {
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+  };
+}
 </script>
 
 </body>
