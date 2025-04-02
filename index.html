@@ -98,8 +98,12 @@
 
     #mainContent {
       display: none;
-      padding: 40px;
+      min-height: 100vh;
+      padding: 60px 20px 40px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     nav a {
@@ -129,11 +133,8 @@
     }
 
     #accessNodeLink {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
+      margin-top: 30px;
       opacity: 0.05;
-      z-index: 10000;
     }
 
     #accessNodeLink:hover {
@@ -179,9 +180,8 @@
     <a onclick="navigateWithLoader('puzzle.html', ['[ puzzle access initiated... ]','[ PASSWORD: enemy ]'])">[ access node ]</a>
   </div>
 </div>
-
 <script>
-// Animate glitch to reveal cipher
+// Animate glitch text revealing the cipher
 window.onload = () => {
   const finalCipher = "Pelcgvp Pbzvpf";
   const glitchChars = "!@#$%^&*()_+=<>?~";
@@ -209,7 +209,7 @@ function validateCipher() {
   if (input === "cryptic comics") {
     document.getElementById("cipherGate").style.display = "none";
     launchLoader(() => {
-      document.getElementById("mainContent").style.display = "block";
+      document.getElementById("mainContent").style.display = "flex";
     });
   } else {
     alert("❌ Incorrect. Try again.");
@@ -253,7 +253,7 @@ function navigateWithLoader(destination, messages) {
   }, 100);
 }
 
-// Keyboard shortcuts
+// Secret key combos
 document.addEventListener("keydown", function (e) {
   if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "h") {
     launchLoader(() => {
@@ -271,7 +271,7 @@ document.addEventListener("keydown", function (e) {
   }
 });
 
-// Matrix background
+// Matrix Background FX
 const canvas = document.getElementById("matrixCanvas");
 const ctx = canvas.getContext("2d");
 canvas.height = window.innerHeight;
@@ -282,7 +282,7 @@ const columns = canvas.width / fontSize;
 const drops = Array.from({ length: columns }).fill(1);
 
 function drawMatrix() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+  ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#0F0";
   ctx.font = fontSize + "px monospace";
