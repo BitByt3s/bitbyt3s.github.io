@@ -208,7 +208,7 @@
   <a onclick="navigateWithLoader('about.html', ['[ identity check... ]','[ ACCESS KEY: yrtnpflnprff ]'])">About</a>
 </nav>
 
-<!-- Riddle Blocks -->
+<!-- Riddles -->
 <div class="puzzle-box">
   <h2>> Puzzle #1</h2>
   <p>"Born from conflict. Fed by fear. Named by war."</p>
@@ -242,14 +242,14 @@
   </div>
 </div>
 
-<!-- 🎉 Final Button -->
+<!-- Final Reward Button -->
 <div id="congratsSection" style="display:none; margin-top:40px;">
   <button onclick="playFinalVideo()">🎉 Congratulations – Watch the Final Message</button>
 </div>
 
-<!-- 🎥 Video Overlay -->
+<!-- Video Overlay -->
 <div id="videoOverlay">
-  <video id="finalVideo" autoplay muted>
+  <video id="finalVideo" autoplay>
     <source src="assets/still alive.mp4" type="video/mp4" />
     Your browser does not support the video tag.
   </video>
@@ -295,13 +295,24 @@ function showCorrectOverlay(callback) {
   }, 1200);
 }
 
+// ✅ FINAL VIDEO LOGIC
 function playFinalVideo() {
   const overlay = document.getElementById('videoOverlay');
   const video = document.getElementById('finalVideo');
 
   overlay.style.display = 'flex';
   video.muted = false;
-  video.play();
+
+  const playPromise = video.play();
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      // Good
+    }).catch(() => {
+      alert("🔇 Tap screen to start the video.");
+      video.muted = true;
+      video.play();
+    });
+  }
 
   video.onended = () => {
     overlay.style.transition = 'opacity 2s ease';
@@ -342,59 +353,7 @@ function navigateWithLoader(destination, messages) {
   }, 100);
 }
 
-// Ctrl+Shift+H for secret
-document.addEventListener("keydown", function (e) {
-  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "h") {
-    const overlay = document.getElementById("terminalOverlay");
-    const terminalText = document.getElementById("terminalText");
-    const barFill = document.getElementById("barFill");
-
-    overlay.style.display = "flex";
-    terminalText.textContent = "[ booting access node... ]";
-
-    let progress = 0;
-    const messages = [
-      "[ establishing encrypted tunnel... ]",
-      "[ fingerprint confirmed ]",
-      "[ ACCESS KEY: xnengrpbcu ]",
-      "[ unlocking next layer... ]"
-    ];
-
-    let msgIndex = 0;
-    let messageTimer = setInterval(() => {
-      if (msgIndex < messages.length) {
-        terminalText.textContent += "\n" + messages[msgIndex];
-        msgIndex++;
-      }
-    }, 900);
-
-    let barInterval = setInterval(() => {
-      progress += 2;
-      barFill.style.width = progress + "%";
-      if (progress >= 100) {
-        clearInterval(barInterval);
-        clearInterval(messageTimer);
-        setTimeout(() => {
-          const userPass = prompt("Enter access password:");
-          if (userPass && userPass.toLowerCase() === "karatechop") {
-            window.location.href = "secret.html";
-          } else {
-            alert("❌ Access Denied.");
-            overlay.style.display = "none";
-            barFill.style.width = "0%";
-            terminalText.textContent = "[ booting access node... ]";
-          }
-        }, 1000);
-      }
-    }, 100);
-  }
-
-  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "e") {
-    navigateWithLoader('puzzle_email.html', ['[ unlocking email puzzle... ]', '[ ACCESS KEY: rznvyneqerff ]']);
-  }
-});
-
-// Matrix Background
+// Matrix background
 const canvas = document.getElementById("matrixCanvas");
 const ctx = canvas.getContext("2d");
 canvas.height = window.innerHeight;
