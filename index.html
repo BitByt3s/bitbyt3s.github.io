@@ -2,62 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>bitbyt3s // Gate</title>
+  <title>bitbyt3s // Entry Sequence</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background: black;
-      color: #00ff00;
-      font-family: 'Courier New', monospace;
       overflow: hidden;
+      background-color: black;
+      font-family: 'Courier New', monospace;
     }
 
-    #introScene {
+    #introContainer {
       position: fixed;
-      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 9999;
+      opacity: 1;
+    }
+
+    #scene {
+      position: absolute;
       width: 100%;
       height: 100%;
-      background: url("assets/scene_bg.gif") no-repeat center center;
-      background-size: cover;
-      z-index: 1;
-      animation: fadeOut 2s ease-in-out 8s forwards;
+      object-fit: cover;
+      z-index: 0;
     }
 
-    #welcomeBanner {
-      position: fixed;
-      top: 20px;
-      width: 100%;
-      text-align: center;
-      font-size: 24px;
+    #welcomeText {
       color: #00ff00;
-      z-index: 3;
+      font-size: 28px;
+      z-index: 1;
       text-shadow: 0 0 5px #00ff00;
       animation: flicker 1.5s infinite;
-    }
-
-    #walker {
-      position: absolute;
-      bottom: 30px;
-      left: -150px;
-      transform: scale(1.5);
-      transform-origin: bottom left;
-      z-index: 2;
-      animation: walkAcross 8s linear forwards;
-      filter: drop-shadow(8px 6px 2px rgba(0, 255, 0, 0.3));
-    }
-
-    @keyframes walkAcross {
-      from { left: -150px; }
-      to { left: 100%; }
-    }
-
-    @keyframes fadeOut {
-      to {
-        opacity: 0;
-        visibility: hidden;
-      }
     }
 
     @keyframes flicker {
@@ -65,192 +47,56 @@
       50% { opacity: 0.4; }
     }
 
-    #cipherGate {
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-      z-index: 4;
+    .fade-out {
+      animation: fadeOut 2s ease forwards;
     }
 
-    #cipherGate h1 {
-      font-size: 24px;
-      animation: glitch 1s infinite;
-    }
-
-    #cipherGate input {
-      background: black;
-      border: 1px solid #00ff00;
-      color: #00ff00;
-      font-family: monospace;
-      font-size: 16px;
-      padding: 10px;
-      width: 300px;
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    #cipherGate button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: black;
-      color: #00ff00;
-      border: 1px solid #00ff00;
-      cursor: pointer;
-    }
-
-    @keyframes glitch {
-      0%, 100% { text-shadow: 1px 1px #00ff00; }
-      20%, 60% { text-shadow: -2px 0 2px #00ff00; }
-      40%, 80% { text-shadow: 2px 0 4px #00ff00; }
-    }
-
-    #loaderOverlay {
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: black;
-      z-index: 5;
-      color: #00ff00;
-      font-size: 16px;
-    }
-
-    #progressBar {
-      border: 1px solid #00ff00;
-      height: 20px;
-      width: 60%;
-      margin-top: 20px;
-    }
-
-    #barFill {
-      height: 100%;
-      width: 0%;
-      background: #00ff00;
+    @keyframes fadeOut {
+      to { opacity: 0; }
     }
   </style>
 </head>
 <body>
 
-<!-- Background -->
-<div id="introScene"></div>
+  <div id="introContainer">
+    <img src="assets/scene_bg.gif" id="scene" alt="intro animation" />
+    <div id="welcomeText">WELCOME BACK, HUMAN</div>
+  </div>
 
-<!-- Welcome Text -->
-<div id="welcomeBanner">WELCOME BACK, HUMAN</div>
+  <!-- Intro music -->
+  <audio id="introMusic" src="sounds/intro.mp3" preload="auto"></audio>
 
-<!-- Knight Sprite -->
-<img src="assets/walker.gif" id="walker" alt="hacker-knight" />
+  <script>
+    const audio = document.getElementById("introMusic");
+    const container = document.getElementById("introContainer");
 
-<!-- Cipher Gate -->
-<div id="cipherGate">
-  <h1 id="glitchCipher">#@!%$@!@^*(&%</h1>
-  <p>Decrypt the phrase above to proceed:</p>
-  <input type="text" id="cipherInput" placeholder="Enter decrypted phrase..." />
-  <button onclick="validateCipher()">Submit</button>
-</div>
-
-<!-- Terminal Loader -->
-<div id="loaderOverlay">
-  <div>[ SYSTEM UNLOCKING... ]</div>
-  <div id="progressBar"><div id="barFill"></div></div>
-</div>
-
-<!-- Audio -->
-<audio id="introMusic" src="assets/intro.mp3" preload="auto" loop></audio>
-
-<script>
-window.onload = () => {
-  const finalCipher = "Pelcgvp Pbzvpf";
-  const glitchChars = "!@#$%^&*()_+=<>?~";
-  const el = document.getElementById("glitchCipher");
-  let revealed = "", i = 0;
-
-  const glitchInterval = setInterval(() => {
-    if (i < finalCipher.length) {
-      revealed += finalCipher[i];
-      const remaining = Array.from({ length: finalCipher.length - i - 1 })
-        .map(() => glitchChars[Math.floor(Math.random() * glitchChars.length)])
-        .join("");
-      el.textContent = revealed + remaining;
-      i++;
-    } else {
-      el.textContent = finalCipher;
-      clearInterval(glitchInterval);
-    }
-  }, 100);
-
-  // Knight finishes walk
-  const knight = document.getElementById("walker");
-  knight.addEventListener("animationend", () => {
-    knight.style.display = "none";
-    setTimeout(() => {
-      document.getElementById("cipherGate").style.display = "flex";
-      document.getElementById("introMusic").volume = 0.1;
-      fadeOutMusic();
-    }, 1000);
-  });
-
-  // Music autoplay workaround
-  const audio = document.getElementById("introMusic");
-  audio.volume = 1;
-  audio.play().catch(() => {
-    const unlockAudio = () => {
+    // Play intro music
+    window.addEventListener("load", () => {
+      audio.volume = 1;
       audio.play().catch(() => {});
-      document.removeEventListener("click", unlockAudio);
-      document.removeEventListener("keydown", unlockAudio);
-    };
-    document.addEventListener("click", unlockAudio);
-    document.addEventListener("keydown", unlockAudio);
-  });
-};
+    });
 
-// Fade out music
-function fadeOutMusic() {
-  const music = document.getElementById("introMusic");
-  const fadeAudio = setInterval(() => {
-    if (music.volume > 0.01) {
-      music.volume -= 0.01;
-    } else {
-      clearInterval(fadeAudio);
-      music.pause();
-    }
-  }, 200);
-}
+    // Start fade + redirect after 6 sec
+    setTimeout(() => {
+      container.classList.add("fade-out");
 
-// Cipher check
-function validateCipher() {
-  const input = document.getElementById("cipherInput").value.trim().toLowerCase();
-  if (input === "cryptic comics") {
-    launchLoader();
-  } else {
-    alert("❌ Incorrect. Try again.");
-  }
-}
+      // Fade out the music over 2 seconds
+      const fadeInterval = setInterval(() => {
+        if (audio.volume > 0.05) {
+          audio.volume -= 0.05;
+        } else {
+          audio.volume = 0;
+          audio.pause();
+          clearInterval(fadeInterval);
+        }
+      }, 100); // fade over ~2 seconds
 
-// Terminal style loader
-function launchLoader() {
-  document.getElementById("cipherGate").style.display = "none";
-  const overlay = document.getElementById("loaderOverlay");
-  const bar = document.getElementById("barFill");
-  overlay.style.display = "flex";
+      // Redirect after fade finishes
+      setTimeout(() => {
+        window.location.href = "gate.html";
+      }, 2000);
+    }, 6000);
+  </script>
 
-  let progress = 0;
-  const intv = setInterval(() => {
-    progress += 2;
-    bar.style.width = progress + "%";
-    if (progress >= 100) {
-      clearInterval(intv);
-      window.location.href = "home.html";
-    }
-  }, 80);
-}
-</script>
 </body>
 </html>
-
