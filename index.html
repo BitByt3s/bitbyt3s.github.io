@@ -104,8 +104,7 @@
 </div>
 
 <div id="loaderOverlay">
-  <div>[ SYSTEM UNLOCKING... ]</div>
-  <div id="progressBar"><div id="barFill"></div></div>
+  <!-- Injected dynamically by script -->
 </div>
 
 <script>
@@ -142,21 +141,52 @@ function validateCipher() {
   }
 }
 
-// Terminal loader & redirect
+// Terminal loader with animated messages
 function launchLoader() {
   document.getElementById("cipherGate").style.display = "none";
   const overlay = document.getElementById("loaderOverlay");
-  const bar = document.getElementById("barFill");
+  const barHTML = `<div id="progressBar"><div id="barFill"></div></div>`;
   overlay.style.display = "flex";
+  overlay.innerHTML = `<pre id="loaderText"></pre>${barHTML}`;
+  const loaderText = document.getElementById("loaderText");
+  const bar = document.getElementById("barFill");
+
+  const messages = [
+    "[ SYSTEM UNLOCKING... ]",
+    "[ welcome back, human ]",
+    "[ loading main interface... ]"
+  ];
+
+  let msgIndex = 0;
+  function typeNextMessage() {
+    if (msgIndex >= messages.length) return;
+    let msg = messages[msgIndex];
+    let charIndex = 0;
+    const typeInterval = setInterval(() => {
+      loaderText.textContent += msg[charIndex];
+      charIndex++;
+      if (charIndex >= msg.length) {
+        clearInterval(typeInterval);
+        loaderText.textContent += "\n";
+        msgIndex++;
+        setTimeout(typeNextMessage, 700);
+      }
+    }, 30);
+  }
+
+  typeNextMessage();
+
   let progress = 0;
   const intv = setInterval(() => {
     progress += 2;
     bar.style.width = progress + "%";
     if (progress >= 100) {
       clearInterval(intv);
-      window.location.href = "home.html";
+      setTimeout(() => {
+        window.location.href = "home.html";
+      }, 1000);
     }
-  }, 80);
+  }, 100);
 }
 
 // Matrix FX
@@ -190,5 +220,6 @@ window.addEventListener("resize", initMatrix);
 initMatrix();
 setInterval(drawMatrix, 50);
 </script>
+
 </body>
 </html>
