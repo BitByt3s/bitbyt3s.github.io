@@ -2,31 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>bitbyt3s // Access Gate</title>
+  <title>bitbyt3s // Gate</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background-color: black;
+      background: black;
       color: #00ff00;
       font-family: monospace;
       overflow: hidden;
     }
 
-    canvas {
+    /* Background GIF full screen */
+    #introScene {
       position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -2;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("assets/scene_bg.gif") no-repeat center center;
+      background-size: cover;
+      z-index: 1;
+      animation: fadeOut 2s ease-in-out 8s forwards;
     }
 
+    /* Knight walk animation */
     #walker {
       position: absolute;
-      bottom: 20px;
+      bottom: 30px;
       left: -150px;
       height: 120px;
-      z-index: 10;
+      z-index: 2;
       animation: walkAcross 8s linear forwards;
     }
 
@@ -35,20 +41,27 @@
       to { left: 100%; }
     }
 
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    /* Cipher gate section */
     #cipherGate {
-      height: 100vh;
       display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      height: 100vh;
       text-align: center;
-      z-index: 1;
+      z-index: 3;
     }
 
     #cipherGate h1 {
       font-size: 24px;
       animation: glitch 1s infinite;
-      margin-bottom: 20px;
     }
 
     #cipherGate input {
@@ -60,6 +73,7 @@
       padding: 10px;
       width: 300px;
       text-align: center;
+      margin-top: 10px;
     }
 
     #cipherGate button {
@@ -71,6 +85,13 @@
       cursor: pointer;
     }
 
+    @keyframes glitch {
+      0%, 100% { text-shadow: 1px 1px #00ff00; }
+      20%, 60% { text-shadow: -2px 0 2px #00ff00; }
+      40%, 80% { text-shadow: 2px 0 4px #00ff00; }
+    }
+
+    /* Loader overlay */
     #loaderOverlay {
       display: none;
       flex-direction: column;
@@ -81,7 +102,7 @@
       width: 100%;
       height: 100%;
       background-color: black;
-      z-index: 2;
+      z-index: 4;
       color: #00ff00;
       font-size: 16px;
     }
@@ -98,19 +119,14 @@
       width: 0%;
       background: #00ff00;
     }
-
-    @keyframes glitch {
-      0%, 100% { text-shadow: 1px 1px #00ff00; }
-      20%, 60% { text-shadow: -2px 0 2px #00ff00; }
-      40%, 80% { text-shadow: 2px 0 4px #00ff00; }
-    }
   </style>
 </head>
 <body>
 
-<canvas id="matrixCanvas"></canvas>
+<!-- Background Scene -->
+<div id="introScene"></div>
 
-<!-- Knight Walker -->
+<!-- Knight walking -->
 <img src="assets/walker.gif" id="walker" alt="hacker-knight" />
 
 <!-- Cipher Gate -->
@@ -121,45 +137,16 @@
   <button onclick="validateCipher()">Submit</button>
 </div>
 
-<!-- Loader Transition -->
+<!-- Loader -->
 <div id="loaderOverlay">
   <div>[ SYSTEM UNLOCKING... ]</div>
   <div id="progressBar"><div id="barFill"></div></div>
 </div>
 
+<!-- Optional intro music -->
+<audio id="introMusic" src="assets/intro.mp3" preload="auto" autoplay loop></audio>
+
 <script>
-// Matrix Background
-const canvas = document.getElementById("matrixCanvas");
-const ctx = canvas.getContext("2d");
-const letters = "01";
-const fontSize = 16;
-let drops;
-
-function initMatrix() {
-  canvas.height = window.innerHeight;
-  canvas.width = window.innerWidth;
-  const columns = canvas.width / fontSize;
-  drops = Array.from({ length: columns }).fill(1);
-}
-
-function drawMatrix() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#0F0";
-  ctx.font = fontSize + "px monospace";
-  for (let i = 0; i < drops.length; i++) {
-    const text = letters.charAt(Math.floor(Math.random() * letters.length));
-    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-    drops[i]++;
-  }
-}
-
-window.addEventListener("resize", initMatrix);
-initMatrix();
-setInterval(drawMatrix, 50);
-
-// Glitch Reveal
 window.onload = () => {
   const finalCipher = "Pelcgvp Pbzvpf";
   const glitchChars = "!@#$%^&*()_+=<>?~";
@@ -180,15 +167,33 @@ window.onload = () => {
       clearInterval(glitchInterval);
     }
   }, 100);
+
+  // When knight finishes walking, fade in cipher gate
+  const knight = document.getElementById("walker");
+  knight.addEventListener("animationend", () => {
+    knight.style.display = "none";
+    setTimeout(() => {
+      document.getElementById("cipherGate").style.display = "flex";
+      document.getElementById("introMusic").volume = 0.1;
+      fadeOutMusic();
+    }, 1000);
+  });
 };
 
-// Show cipher after knight animation ends
-document.getElementById('walker').addEventListener('animationend', () => {
-  document.getElementById('walker').style.display = 'none';
-  document.getElementById('cipherGate').style.display = 'flex';
-});
+// Fade out music
+function fadeOutMusic() {
+  const music = document.getElementById("introMusic");
+  const fadeAudio = setInterval(() => {
+    if (music.volume > 0.01) {
+      music.volume -= 0.01;
+    } else {
+      clearInterval(fadeAudio);
+      music.pause();
+    }
+  }, 200);
+}
 
-// Cipher check
+// Cipher checker
 function validateCipher() {
   const input = document.getElementById("cipherInput").value.trim().toLowerCase();
   if (input === "cryptic comics") {
@@ -198,12 +203,13 @@ function validateCipher() {
   }
 }
 
-// Loading animation then redirect
+// Loader and redirect
 function launchLoader() {
   document.getElementById("cipherGate").style.display = "none";
   const overlay = document.getElementById("loaderOverlay");
   const bar = document.getElementById("barFill");
   overlay.style.display = "flex";
+
   let progress = 0;
   const intv = setInterval(() => {
     progress += 2;
@@ -215,5 +221,6 @@ function launchLoader() {
   }, 80);
 }
 </script>
+
 </body>
 </html>
