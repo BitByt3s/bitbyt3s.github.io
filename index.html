@@ -22,6 +22,8 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      z-index: 9999;
+      opacity: 1;
     }
 
     #scene {
@@ -46,13 +48,11 @@
     }
 
     .fade-out {
-      animation: fadeOut 2s forwards;
+      animation: fadeOut 2s ease forwards;
     }
 
     @keyframes fadeOut {
-      to {
-        opacity: 0;
-      }
+      to { opacity: 0; }
     }
   </style>
 </head>
@@ -63,13 +63,38 @@
     <div id="welcomeText">WELCOME BACK, HUMAN</div>
   </div>
 
+  <!-- Intro music -->
+  <audio id="introMusic" src="sounds/intro.mp3" preload="auto"></audio>
+
   <script>
-    // Auto-fade and redirect to cipher gate
+    const audio = document.getElementById("introMusic");
+    const container = document.getElementById("introContainer");
+
+    // Play intro music
+    window.addEventListener("load", () => {
+      audio.volume = 1;
+      audio.play().catch(() => {});
+    });
+
+    // Start fade + redirect after 6 sec
     setTimeout(() => {
-      document.getElementById("introContainer").classList.add("fade-out");
+      container.classList.add("fade-out");
+
+      // Fade out the music over 2 seconds
+      const fadeInterval = setInterval(() => {
+        if (audio.volume > 0.05) {
+          audio.volume -= 0.05;
+        } else {
+          audio.volume = 0;
+          audio.pause();
+          clearInterval(fadeInterval);
+        }
+      }, 100); // fade over ~2 seconds
+
+      // Redirect after fade finishes
       setTimeout(() => {
         window.location.href = "gate.html";
-      }, 2000); // wait for fade-out to finish
+      }, 2000);
     }, 6000);
   </script>
 
