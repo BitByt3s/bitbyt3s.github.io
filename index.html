@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>bitbyt3s // Home</title>
   <style>
     html, body {
@@ -41,7 +42,8 @@
       animation: glitch 1.5s infinite;
     }
 
-    #cipherGate input {
+    #cipherGate input,
+    #cipherGate button {
       background: black;
       border: 1px solid #00ff00;
       color: #00ff00;
@@ -49,15 +51,6 @@
       font-size: 16px;
       padding: 10px;
       margin-top: 10px;
-    }
-
-    #cipherGate button {
-      background: black;
-      color: #00ff00;
-      border: 1px solid #00ff00;
-      padding: 10px 20px;
-      margin-top: 10px;
-      cursor: pointer;
     }
 
     @keyframes glitch {
@@ -73,7 +66,8 @@
       display: none;
       position: fixed;
       top: 0; left: 0;
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       background: black;
       color: #00ff00;
       font-family: monospace;
@@ -150,161 +144,157 @@
   </style>
 </head>
 <body>
-<canvas id="matrixCanvas"></canvas>
-
-<div id="cipherGate">
-  <h1 id="glitchCipher">#@!$%^&*()_+=</h1>
-  <p>Decrypt the phrase to gain access:</p>
-  <input type="text" id="cipherInput" placeholder="Enter your decryption..." />
-  <button onclick="validateCipher()">Submit</button>
-</div>
-
-<div id="terminalOverlay">
-  <div>[ unlocking... ]</div>
-  <div id="progressBar"><div id="barFill"></div></div>
-</div>
-
-<div id="mainContent">
-  <h1>> bitbyt3s // home</h1>
-  <nav>
-    <a href="comics.html">Comics</a>
-    <a href="about.html">About</a>
-  </nav>
-
-  <p>Welcome to the system. Decrypt. Decode. Discover.</p>
-
-  <div class="logo-footer">
-    <img src="assets/logo.png" alt="bitbyt3s logo" />
+  <div id="cipherGate">
+    <h1 id="glitchCipher">#@!$%^&*()_+=</h1>
+    <p>Decrypt the phrase to gain access:</p>
+    <input type="text" id="cipherInput" placeholder="Enter your decryption..." />
+    <button onclick="validateCipher()">Submit</button>
   </div>
 
-  <div id="accessNodeLink">
-    <a onclick="navigateWithLoader('puzzle.html', ['[ puzzle access initiated... ]','[ PASSWORD: enemy ]'])">[ access node ]</a>
+  <div id="terminalOverlay">
+    <div>[ unlocking... ]</div>
+    <div id="progressBar"><div id="barFill"></div></div>
   </div>
-</div>
-<script>
-// Cipher animation reveal
-window.onload = () => {
-  const finalCipher = "Pelcgvp Pbzvpf";
-  const glitchChars = "!@#$%^&*()_+=<>?~";
-  const el = document.getElementById("glitchCipher");
-  let revealed = "";
-  let i = 0;
 
-  const glitchInterval = setInterval(() => {
-    if (i < finalCipher.length) {
-      revealed += finalCipher[i];
-      const remaining = Array.from({ length: finalCipher.length - i - 1 })
-        .map(() => glitchChars[Math.floor(Math.random() * glitchChars.length)])
-        .join("");
-      el.textContent = revealed + remaining;
-      i++;
-    } else {
-      el.textContent = finalCipher;
-      clearInterval(glitchInterval);
+  <div id="mainContent">
+    <h1>> bitbyt3s // home</h1>
+    <nav>
+      <a href="comics.html">Comics</a>
+      <a href="about.html">About</a>
+    </nav>
+
+    <p>Welcome to the system. Decrypt. Decode. Discover.</p>
+
+    <div class="logo-footer">
+      <img src="./assets/logo.png" alt="bitbyt3s logo" />
+    </div>
+
+    <div id="accessNodeLink">
+      <a onclick="navigateWithLoader('puzzle.html', ['[ puzzle access initiated... ]','[ PASSWORD: enemy ]'])">[ access node ]</a>
+    </div>
+  </div>
+
+  <canvas id="matrixCanvas"></canvas>
+
+  <script>
+    // Matrix FX
+    const canvas = document.getElementById("matrixCanvas");
+    const ctx = canvas.getContext("2d");
+    const letters = "01";
+    const fontSize = 16;
+    let drops;
+
+    function initMatrix() {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+      const columns = canvas.width / fontSize;
+      drops = Array.from({ length: columns }).fill(1);
     }
-  }, 100);
-};
 
-// Cipher input validator
-function validateCipher() {
-  const input = document.getElementById("cipherInput").value.trim().toLowerCase();
-  if (input === "cryptic comics") {
-    document.getElementById("cipherGate").style.display = "none";
-    launchLoader(() => {
-      document.getElementById("mainContent").style.display = "flex";
-    });
-  } else {
-    alert("❌ Incorrect. Try again.");
-  }
-}
-
-// Terminal loader transition
-function launchLoader(callback) {
-  const overlay = document.getElementById("terminalOverlay");
-  const bar = document.getElementById("barFill");
-  overlay.style.display = "flex";
-  let progress = 0;
-  const intv = setInterval(() => {
-    progress += 2;
-    bar.style.width = progress + "%";
-    if (progress >= 100) {
-      clearInterval(intv);
-      overlay.style.display = "none";
-      if (callback) callback();
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#0F0";
+      ctx.font = fontSize + "px monospace";
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
     }
-  }, 100);
-}
 
-// Loader with redirect
-function navigateWithLoader(destination, messages) {
-  const overlay = document.getElementById("terminalOverlay");
-  const bar = document.getElementById("barFill");
-  const terminalText = document.createElement("pre");
-  terminalText.innerText = messages.join("\n");
-  overlay.innerHTML = "";
-  overlay.appendChild(terminalText);
-  overlay.appendChild(document.getElementById("progressBar"));
-  bar.style.width = "0%";
-  overlay.style.display = "flex";
+    window.addEventListener("resize", initMatrix);
+    initMatrix();
+    setInterval(drawMatrix, 50);
 
-  let progress = 0;
-  const intv = setInterval(() => {
-    progress += 2;
-    bar.style.width = progress + "%";
-    if (progress >= 100) {
-      clearInterval(intv);
-      window.location.href = destination;
-    }
-  }, 100);
-}
+    // Cipher reveal
+    const finalCipher = "Pelcgvp Pbzvpf";
+    const glitchChars = "!@#$%^&*()_+=<>?~";
+    const el = document.getElementById("glitchCipher");
+    let revealed = "";
+    let i = 0;
 
-// Secret keyboard combos
-document.addEventListener("keydown", function (e) {
-  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "h") {
-    launchLoader(() => {
-      const pw = prompt("Enter access password:");
-      if (pw && pw.toLowerCase() === "karatechop") {
-        window.location.href = "secret.html";
+    const glitchInterval = setInterval(() => {
+      if (i < finalCipher.length) {
+        revealed += finalCipher[i];
+        const remaining = Array.from({ length: finalCipher.length - i - 1 })
+          .map(() => glitchChars[Math.floor(Math.random() * glitchChars.length)])
+          .join("");
+        el.textContent = revealed + remaining;
+        i++;
       } else {
-        alert("Access denied.");
+        el.textContent = finalCipher;
+        clearInterval(glitchInterval);
+      }
+    }, 100);
+
+    function validateCipher() {
+      const input = document.getElementById("cipherInput").value.trim().toLowerCase();
+      if (input === "cryptic comics") {
+        document.getElementById("cipherGate").style.display = "none";
+        launchLoader(() => {
+          document.getElementById("mainContent").style.display = "flex";
+        });
+      } else {
+        alert("❌ Incorrect. Try again.");
+      }
+    }
+
+    function launchLoader(callback) {
+      const overlay = document.getElementById("terminalOverlay");
+      const bar = document.getElementById("barFill");
+      overlay.style.display = "flex";
+      let progress = 0;
+      const intv = setInterval(() => {
+        progress += 2;
+        bar.style.width = progress + "%";
+        if (progress >= 100) {
+          clearInterval(intv);
+          overlay.style.display = "none";
+          if (callback) callback();
+        }
+      }, 100);
+    }
+
+    function navigateWithLoader(destination, messages) {
+      const overlay = document.getElementById("terminalOverlay");
+      const bar = document.getElementById("barFill");
+      const terminalText = document.createElement("pre");
+      terminalText.innerText = messages.join("\\n");
+      overlay.innerHTML = "";
+      overlay.appendChild(terminalText);
+      overlay.appendChild(document.getElementById("progressBar"));
+      bar.style.width = "0%";
+      overlay.style.display = "flex";
+
+      let progress = 0;
+      const intv = setInterval(() => {
+        progress += 2;
+        bar.style.width = progress + "%";
+        if (progress >= 100) {
+          clearInterval(intv);
+          window.location.href = destination;
+        }
+      }, 100);
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "h") {
+        launchLoader(() => {
+          const pw = prompt("Enter access password:");
+          if (pw && pw.toLowerCase() === "karatechop") {
+            window.location.href = "secret.html";
+          } else {
+            alert("Access denied.");
+          }
+        });
+      }
+
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "e") {
+        navigateWithLoader("puzzle_email.html", ['[ email gate opening... ]', '[ PASSWORD: emailaddress ]']);
       }
     });
-  }
-
-  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "e") {
-    navigateWithLoader("puzzle_email.html", ['[ email gate opening... ]', '[ PASSWORD: emailaddress ]']);
-  }
-});
-
-// Matrix background effect
-const canvas = document.getElementById("matrixCanvas");
-const ctx = canvas.getContext("2d");
-canvas.height = window.innerHeight;
-canvas.width = window.innerWidth;
-const letters = "01";
-const fontSize = 16;
-const columns = canvas.width / fontSize;
-const drops = Array.from({ length: columns }).fill(1);
-
-function drawMatrix() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#0F0";
-  ctx.font = fontSize + "px monospace";
-  for (let i = 0; i < drops.length; i++) {
-    const text = letters.charAt(Math.floor(Math.random() * letters.length));
-    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-      drops[i] = 0;
-    }
-    drops[i]++;
-  }
-}
-setInterval(drawMatrix, 50);
-window.onresize = () => {
-  canvas.height = window.innerHeight;
-  canvas.width = window.innerWidth;
-};
-</script>
+  </script>
 </body>
 </html>
