@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>bitbyt3s // Hexmap Node</title>
+  <title>bitbyt3s // HexMap Terminal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
@@ -15,87 +15,113 @@
     }
 
     #map {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       white-space: pre;
       font-size: 14px;
-      line-height: 1.2em;
-      text-align: center;
-      margin-top: 40px;
+      line-height: 1.1;
+      text-align: left;
     }
 
-    #hint {
-      position: absolute;
-      top: 10px;
-      width: 100%;
-      text-align: center;
-      color: #00ff00;
-      font-size: 14px;
-      opacity: 0.6;
+    .flash {
+      animation: flashRed 0.4s;
+    }
+
+    @keyframes flashRed {
+      0% { background: red; }
+      100% { background: black; }
     }
   </style>
 </head>
 <body>
-<div id="hint">// use WASD to explore | some tiles pulse red...</div>
-<pre id="map"></pre>
+<div id="map"></div>
 
 <script>
-const mapEl = document.getElementById("map");
-const rows = 20, cols = 40;
-let px = parseInt(localStorage.getItem("hex_x")) || 10;
-let py = parseInt(localStorage.getItem("hex_y")) || 10;
-const flashlightRadius = 3;
-let warps = [];
+const mapWidth = 24;
+const mapHeight = 16;
+const viewRadius = 4;
+let map = [];
+let px = 1, py = 1;
 
-function generateMap() {
-  warps = [];
-  const map = [];
-  for (let y = 0; y < rows; y++) {
-    const row = [];
-    for (let x = 0; x < cols; x++) {
-      const isPlayer = (x === px && y === py);
+function generateHexMap() {
+  const saved = localStorage.getItem("hexmapState");
+  if (saved) {
+    const data = JSON.parse(saved);
+    map = data.map;
+    px = data.px;
+    py = data.py;
+    return;
+  }
+
+  map = Array.from({ length: mapHeight }, () =>
+    Array.from({ length: mapWidth }, () => {
+      const rand = Math.random();
+      if (rand > 0.98) return "W"; // Warp
+      if (rand > 0.92) return "X"; // Trap
+      if (rand > 0.85) return "#"; // Wall
+      return ".";
+    })
+  );
+
+  map[py][px] = "P";
+}
+
+function saveMapState() {
+  localStorage.setItem("hexmapState", JSON.stringify({ map, px, py }));
+}
+
+function drawMap() {
+  const output = map.map((row, y) =>
+    row.map((tile, x) => {
       const dx = x - px;
       const dy = y - py;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      if (isPlayer) {
-        row.push('P');
-      } else if (distance <= flashlightRadius) {
-        if (Math.random() < 0.02) {
-          warps.push({ x, y });
-          row.push('%'); // warp tile
-        } else {
-          row.push('.');
-        }
-      } else {
-        row.push(' ');
-      }
-    }
-    map.push(row);
-  }
-  mapEl.textContent = map.map(r => r.join('')).join('\n');
+      return Math.abs(dx) + Math.abs(dy) <= viewRadius
+        ? (x === px && y === py ? "@" : tile)
+        : " ";
+    }).join("")
+  ).join("\n");
+  document.getElementById("map").textContent = output;
 }
 
 function move(dx, dy) {
-  const newX = px + dx;
-  const newY = py + dy;
-  if (newX < 0 || newY < 0 || newX >= cols || newY >= rows) return;
-  px = newX;
-  py = newY;
-  localStorage.setItem("hex_x", px);
-  localStorage.setItem("hex_y", py);
-  generateMap();
+  const nx = px + dx;
+  const ny = py + dy;
+  if (nx < 0 || ny < 0 || nx >= mapWidth || ny >= mapHeight) return;
+  const tile = map[ny][nx];
+  if (tile === "#") return;
 
-  if (warps.some(w => w.x === px && w.y === py)) {
+  if (tile === "X") {
+    flashTrap();
+    px = 1;
+    py = 1;
+  } else if (tile === "W") {
     window.location.href = "maze.html";
+    return;
+  } else {
+    px = nx;
+    py = ny;
   }
+
+  saveMapState();
+  drawMap();
 }
 
-document.addEventListener("keydown", e => {
+function flashTrap() {
+  document.body.classList.add("flash");
+  setTimeout(() => document.body.classList.remove("flash"), 300);
+}
+
+document.addEventListener("keydown", (e) => {
   if (e.key === "w") move(0, -1);
   if (e.key === "s") move(0, 1);
   if (e.key === "a") move(-1, 0);
   if (e.key === "d") move(1, 0);
 });
 
-generateMap();
+generateHexMap();
+drawMap();
 </script>
 </body>
 </html>
