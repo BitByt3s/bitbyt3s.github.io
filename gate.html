@@ -11,7 +11,8 @@
       background-color: black;
       color: #00ff00;
       font-family: monospace;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     canvas {
@@ -22,13 +23,13 @@
     }
 
     #cipherGate {
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
-      z-index: 1;
+      padding-top: 80px;
     }
 
     #cipherGate h1 {
@@ -137,24 +138,20 @@
   <p>Decrypt the phrase above to proceed:</p>
   <input type="text" id="cipherInput" placeholder="Enter decrypted phrase..." />
   <button onclick="validateCipher()">Submit</button>
-  <br><br>
-  <button onclick="document.getElementById('rot13Decoder').scrollIntoView({ behavior: 'smooth' });">
-    [ decode cipher ]
-  </button>
+
+  <!-- ROT13 Decoder directly below -->
+  <div class="rot13-box" id="rot13Decoder">
+    <h2>> ROT13 Decoder</h2>
+    <p>Use this tool to decode encrypted messages found on the system.</p>
+    <input type="text" id="rot13Input" placeholder="Enter ROT13-encoded text..." />
+    <button onclick="decodeROT13()">Decode</button>
+    <p id="rot13Output"></p>
+  </div>
 </div>
 
 <div id="loaderOverlay">
   <div>[ SYSTEM UNLOCKING... ]</div>
   <div id="progressBar"><div id="barFill"></div></div>
-</div>
-
-<!-- ROT13 Decoder Tool -->
-<div class="rot13-box" id="rot13Decoder">
-  <h2>> ROT13 Decoder</h2>
-  <p>Use this tool to decode encrypted messages found on the system.</p>
-  <input type="text" id="rot13Input" placeholder="Enter ROT13-encoded text..." />
-  <button onclick="decodeROT13()">Decode</button>
-  <p id="rot13Output"></p>
 </div>
 
 <script>
@@ -213,19 +210,15 @@ function decodeROT13() {
   document.getElementById("rot13Output").textContent = output;
 }
 
-// Matrix FX
+// Matrix background
 const canvas = document.getElementById("matrixCanvas");
 const ctx = canvas.getContext("2d");
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
 const letters = "01";
 const fontSize = 16;
-let drops;
-
-function initMatrix() {
-  canvas.height = window.innerHeight;
-  canvas.width = window.innerWidth;
-  const columns = canvas.width / fontSize;
-  drops = Array.from({ length: columns }).fill(1);
-}
+const columns = canvas.width / fontSize;
+const drops = Array.from({ length: columns }).fill(1);
 
 function drawMatrix() {
   ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
@@ -240,8 +233,10 @@ function drawMatrix() {
   }
 }
 
-window.addEventListener("resize", initMatrix);
-initMatrix();
+window.addEventListener("resize", () => {
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+});
 setInterval(drawMatrix, 50);
 </script>
 
