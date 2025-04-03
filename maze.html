@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>bitbyt3s // Maze Gauntlet</title>
+  <title>bitbyt3s // Maze Challenge</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
@@ -11,220 +11,169 @@
       background: black;
       color: #00ff00;
       font-family: monospace;
+      overflow: hidden;
+    }
+
+    #startScreen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: black;
+      color: #00ff00;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2em;
+      z-index: 10;
+      cursor: pointer;
+      animation: flicker 2s infinite;
+    }
+
+    #maze {
+      white-space: pre;
+      font-size: 16px;
+      line-height: 18px;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      overflow: hidden;
-    }
-
-    #mazeContainer {
       text-align: left;
-      white-space: pre;
-      line-height: 1.2em;
-      font-size: 16px;
-      background: rgba(0, 0, 0, 0.85);
-      border: 1px solid #00ff00;
-      padding: 20px;
-      max-width: 90vw;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
     }
 
-    #message, #timer {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #00ff00;
-      font-weight: bold;
-    }
-
-    #flashOverlay {
+    #overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: red;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 999;
-      transition: opacity 0.2s ease;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: black;
+      color: #00ff00;
+      font-family: monospace;
+      font-size: 2em;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 99;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
   </style>
 </head>
 <body>
+<div id="startScreen">>> ENTER THE MAZE</div>
+<div id="overlay">[ Caught! Restarting... ]</div>
+<div id="maze" style="display: none;"></div>
+
 <audio id="bgMusic" src="sounds/intro.mp3" preload="auto" loop></audio>
-<audio id="caughtSound" src="sounds/caught.mp3" preload="auto"></audio>
 <audio id="trapSound" src="sounds/traps.mp3" preload="auto"></audio>
+<audio id="caughtSound" src="sounds/caught.mp3" preload="auto"></audio>
 <audio id="winSound" src="sounds/winning.mp3" preload="auto"></audio>
 
-<div id="flashOverlay"></div>
-<div id="message"></div>
-<div id="mazeContainer"></div>
-
 <script>
-const bgMusic = document.getElementById("bgMusic");
-bgMusic.volume = 0.6;
-bgMusic.play().catch(() => {});
+const mazeEl = document.getElementById("maze");
+const overlay = document.getElementById("overlay");
+const startScreen = document.getElementById("startScreen");
 
-const caughtSound = document.getElementById("caughtSound");
-const trapSound = document.getElementById("trapSound");
-const winSound = document.getElementById("winSound");
-const flash = document.getElementById("flashOverlay");
+const width = 25, height = 15;
+let maze = [], px = 1, py = 1, ex = 23, ey = 13, chaser = { x: 23, y: 1 };
 
-const mazeData = [
-  "##############################",
-  "#@   #     T       #     #   #",
-  "# ### ##### ##### ### ### # #",
-  "#   #     #     #     #   # #",
-  "### # ### ##### ##### # ### #",
-  "#   #   #   T #     # #   # #",
-  "# ### ##### ### ### ### # # #",
-  "# #     #     # #   #   # # #",
-  "# # ### # ##### # ### ### # #",
-  "# #   # #     # #     #   # #",
-  "# ### # ### ### ##### # ### #",
-  "#     #   #     #     #     #",
-  "##### ### # ##### ######### #",
-  "#     #   #     #     T   # #",
-  "# ### ### ### ### ##### ### #",
-  "#   #     #   #     #       #",
-  "### ##### ### ##### ####### #",
-  "#   T     #     #       T   #",
-  "# ######### ### # ######### #",
-  "#         #     #         E #",
-  "##############################"
-];
-
-let playerPos = { x: 1, y: 1 };
-let chaserPos = { x: 28, y: 1 };
-let checkpoint = { ...playerPos };
-let timer = 0;
-let interval;
-const mazeContainer = document.getElementById("mazeContainer");
-const message = document.getElementById("message");
+// Generate styled maze
+function generateMaze() {
+  maze = Array.from({ length: height }, (_, y) =>
+    Array.from({ length: width }, (_, x) => {
+      if (y === 0 || y === height - 1 || x === 0 || x === width - 1) return '█';
+      if (Math.random() > 0.75) return '█';
+      if (Math.random() > 0.85) return '^';
+      return '·';
+    })
+  );
+  maze[py][px] = 'P';
+  maze[ey][ex] = 'E';
+  maze[chaser.y][chaser.x] = 'X';
+}
 
 function drawMaze() {
-  let display = "";
-  for (let y = 0; y < mazeData.length; y++) {
-    for (let x = 0; x < mazeData[y].length; x++) {
-      if (playerPos.x === x && playerPos.y === y) {
-        display += "@";
-      } else if (chaserPos.x === x && chaserPos.y === y) {
-        display += "X";
-      } else {
-        display += mazeData[y][x];
-      }
-    }
-    display += "\n";
+  mazeEl.textContent = maze.map(row => row.join('')).join('\n');
+}
+
+function play(soundId) {
+  const audio = document.getElementById(soundId);
+  if (audio) {
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
   }
-  mazeContainer.textContent = display;
 }
 
-function flashRed() {
-  flash.style.opacity = 0.5;
-  setTimeout(() => flash.style.opacity = 0, 300);
-}
-
-function startTimer() {
-  interval = setInterval(() => {
-    timer++;
-    message.textContent = `Time: ${timer}s`;
-  }, 1000);
-}
-
-function stopTimer() {
-  clearInterval(interval);
-}
-
-function resetToCheckpoint(reason) {
-  if (reason === "caught") {
-    flashRed();
-    caughtSound.play();
-  } else if (reason === "trap") {
-    trapSound.play();
-  }
-  playerPos = { ...checkpoint };
-  chaserPos = { x: 28, y: 1 };
-  drawMaze();
-}
-
-function isWall(x, y) {
-  return mazeData[y][x] === "#";
-}
-
-function isTrap(x, y) {
-  return mazeData[y][x] === "T";
-}
-
-function isExit(x, y) {
-  return mazeData[y][x] === "E";
-}
-
-function moveChaser() {
-  const dx = playerPos.x - chaserPos.x;
-  const dy = playerPos.y - chaserPos.y;
-  const moves = [
-    { x: chaserPos.x + Math.sign(dx), y: chaserPos.y },
-    { x: chaserPos.x, y: chaserPos.y + Math.sign(dy) },
-    { x: chaserPos.x - Math.sign(dx), y: chaserPos.y },
-    { x: chaserPos.x, y: chaserPos.y - Math.sign(dy) }
-  ];
-  for (let move of moves) {
-    if (!isWall(move.x, move.y)) {
-      chaserPos = { x: move.x, y: move.y };
-      break;
-    }
-  }
+function resetGame(msg) {
+  overlay.textContent = msg;
+  overlay.style.display = "flex";
+  setTimeout(() => location.reload(), 2000);
 }
 
 function movePlayer(dx, dy) {
-  const newX = playerPos.x + dx;
-  const newY = playerPos.y + dy;
-  if (!isWall(newX, newY)) {
-    playerPos = { x: newX, y: newY };
-  }
+  const nx = px + dx;
+  const ny = py + dy;
 
-  if ((playerPos.x + playerPos.y) % 8 === 0) {
-    checkpoint = { ...playerPos };
-  }
-
-  if (isTrap(playerPos.x, playerPos.y)) {
-    resetToCheckpoint("trap");
+  if (maze[ny][nx] === '█') return;
+  if (maze[ny][nx] === 'E') {
+    play('winSound');
+    setTimeout(() => window.location.href = "home.html", 1000);
     return;
   }
 
-  if (isExit(playerPos.x, playerPos.y)) {
-    winSound.play();
-    stopTimer();
-    setTimeout(() => window.location.href = "home.html", 2000);
-    return;
-  }
+  if (maze[ny][nx] === '^') play('trapSound');
+
+  maze[py][px] = '·';
+  px = nx;
+  py = ny;
+  maze[py][px] = 'P';
 
   moveChaser();
-
-  if (playerPos.x === chaserPos.x && playerPos.y === chaserPos.y) {
-    resetToCheckpoint("caught");
-    return;
-  }
-
   drawMaze();
 }
 
-document.addEventListener("keydown", (e) => {
-  switch (e.key) {
-    case "ArrowUp": movePlayer(0, -1); break;
-    case "ArrowDown": movePlayer(0, 1); break;
-    case "ArrowLeft": movePlayer(-1, 0); break;
-    case "ArrowRight": movePlayer(1, 0); break;
+function moveChaser() {
+  maze[chaser.y][chaser.x] = '·';
+  let best = { dx: 0, dy: 0, dist: Infinity };
+  const dirs = [{ dx:0,dy:-1 },{ dx:0,dy:1 },{ dx:-1,dy:0 },{ dx:1,dy:0 }];
+  dirs.forEach(d => {
+    const nx = chaser.x + d.dx;
+    const ny = chaser.y + d.dy;
+    if (maze[ny][nx] !== '█') {
+      const dist = Math.abs(nx - px) + Math.abs(ny - py);
+      if (dist < best.dist) {
+        best = { dx: d.dx, dy: d.dy, dist };
+      }
+    }
+  });
+  chaser.x += best.dx;
+  chaser.y += best.dy;
+  if (chaser.x === px && chaser.y === py) {
+    play('caughtSound');
+    resetGame("[ Caught! Restarting... ]");
+  } else {
+    maze[chaser.y][chaser.x] = 'X';
   }
+}
+
+document.addEventListener("keydown", e => {
+  if (mazeEl.style.display === "none") return;
+  if (e.key === "ArrowUp") movePlayer(0, -1);
+  if (e.key === "ArrowDown") movePlayer(0, 1);
+  if (e.key === "ArrowLeft") movePlayer(-1, 0);
+  if (e.key === "ArrowRight") movePlayer(1, 0);
 });
 
-drawMaze();
-startTimer();
+startScreen.onclick = () => {
+  startScreen.style.display = "none";
+  mazeEl.style.display = "flex";
+  generateMaze();
+  drawMaze();
+  const music = document.getElementById("bgMusic");
+  music.volume = 0.5;
+  music.play().catch(() => {});
+};
 </script>
 </body>
 </html>
