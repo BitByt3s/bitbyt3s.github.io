@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>bitbyt3s // Access Gate</title>
+  <title>bitbyt3s // Entry Gate</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
@@ -90,20 +90,57 @@
       20%, 60% { text-shadow: -2px 0 2px #00ff00; }
       40%, 80% { text-shadow: 2px 0 4px #00ff00; }
     }
+
+    .rot13-box {
+      border: 1px solid #00ff00;
+      padding: 20px;
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: rgba(0, 0, 0, 0.8);
+      text-align: center;
+    }
+
+    .rot13-box input {
+      width: 80%;
+      padding: 10px;
+      background: black;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      font-family: monospace;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .rot13-box button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-family: monospace;
+      background: black;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      cursor: pointer;
+    }
+
+    #rot13Output {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 18px;
+    }
   </style>
 </head>
 <body>
 
 <canvas id="matrixCanvas"></canvas>
 
-<!-- Background Music -->
-<audio id="gateMusic" src="sounds/intro.mp3" preload="auto" loop></audio>
-
 <div id="cipherGate">
   <h1 id="glitchCipher">#@!%$@!@^*(&%</h1>
   <p>Decrypt the phrase above to proceed:</p>
   <input type="text" id="cipherInput" placeholder="Enter decrypted phrase..." />
   <button onclick="validateCipher()">Submit</button>
+  <br><br>
+  <button onclick="document.getElementById('rot13Decoder').scrollIntoView({ behavior: 'smooth' });">
+    [ decode cipher ]
+  </button>
 </div>
 
 <div id="loaderOverlay">
@@ -111,8 +148,16 @@
   <div id="progressBar"><div id="barFill"></div></div>
 </div>
 
+<!-- ROT13 Decoder Tool -->
+<div class="rot13-box" id="rot13Decoder">
+  <h2>> ROT13 Decoder</h2>
+  <p>Use this tool to decode encrypted messages found on the system.</p>
+  <input type="text" id="rot13Input" placeholder="Enter ROT13-encoded text..." />
+  <button onclick="decodeROT13()">Decode</button>
+  <p id="rot13Output"></p>
+</div>
+
 <script>
-// Glitch-to-cipher animation
 window.onload = () => {
   const finalCipher = "Pelcgvp Pbzvpf";
   const glitchChars = "!@#$%^&*()_+=<>?~";
@@ -124,8 +169,7 @@ window.onload = () => {
     if (i < finalCipher.length) {
       revealed += finalCipher[i];
       const remaining = Array.from({ length: finalCipher.length - i - 1 })
-        .map(() => glitchChars[Math.floor(Math.random() * glitchChars.length)])
-        .join("");
+        .map(() => glitchChars[Math.floor(Math.random() * glitchChars.length)]).join("");
       el.textContent = revealed + remaining;
       i++;
     } else {
@@ -135,7 +179,6 @@ window.onload = () => {
   }, 100);
 };
 
-// Cipher validation
 function validateCipher() {
   const input = document.getElementById("cipherInput").value.trim().toLowerCase();
   if (input === "cryptic comics") {
@@ -145,7 +188,6 @@ function validateCipher() {
   }
 }
 
-// Loader and redirect
 function launchLoader() {
   document.getElementById("cipherGate").style.display = "none";
   const overlay = document.getElementById("loaderOverlay");
@@ -162,7 +204,16 @@ function launchLoader() {
   }, 80);
 }
 
-// Matrix background
+function decodeROT13() {
+  const input = document.getElementById("rot13Input").value;
+  const output = input.replace(/[a-zA-Z]/g, function (char) {
+    const base = char <= 'Z' ? 65 : 97;
+    return String.fromCharCode(((char.charCodeAt(0) - base + 13) % 26) + base);
+  });
+  document.getElementById("rot13Output").textContent = output;
+}
+
+// Matrix FX
 const canvas = document.getElementById("matrixCanvas");
 const ctx = canvas.getContext("2d");
 const letters = "01";
@@ -192,17 +243,6 @@ function drawMatrix() {
 window.addEventListener("resize", initMatrix);
 initMatrix();
 setInterval(drawMatrix, 50);
-
-// Music autoplay (with fallback)
-window.addEventListener("load", () => {
-  const music = document.getElementById("gateMusic");
-  if (music) {
-    music.volume = 0.6;
-    music.play().catch(() => {
-      console.log("Autoplay blocked. Waiting for user interaction.");
-    });
-  }
-});
 </script>
 
 </body>
