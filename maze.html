@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>bitbyt3s // Maze Gauntlet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #mazeContainer {
+      text-align: left;
+      white-space: pre;
+      line-height: 1.2em;
+      font-size: 16px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid #00ff00;
+      padding: 20px;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    #message, #timer {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #00ff00;
+      font-weight: bold;
+    }
+
+    #flashOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: red;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+      transition: opacity 0.2s ease;
+    }
+  </style>
+</head>
+<body>
+<audio id="bgMusic" src="sounds/intro.mp3" preload="auto" loop></audio>
+<audio id="caughtSound" src="sounds/caught.mp3" preload="auto"></audio>
+<audio id="trapSound" src="sounds/traps.mp3" preload="auto"></audio>
+<audio id="winSound" src="sounds/winning.mp3" preload="auto"></audio>
+
+<div id="flashOverlay"></div>
+<div id="message"></div>
+<div id="mazeContainer"></div>
+
+<script>
+const bgMusic = document.getElementById("bgMusic");
+bgMusic.volume = 0.6;
+bgMusic.play().catch(() => {});
+
+const caughtSound = document.getElementById("caughtSound");
+const trapSound = document.getElementById("trapSound");
+const winSound = document.getElementById("winSound");
+const flash = document.getElementById("flashOverlay");
+
+const mazeData = [
+  "##############################",
+  "#@   #     T       #     #   #",
+  "# ### ##### ##### ### ### # #",
+  "#   #     #     #     #   # #",
+  "### # ### ##### ##### # ### #",
+  "#   #   #   T #     # #   # #",
+  "# ### ##### ### ### ### # # #",
+  "# #     #     # #   #   # # #",
+  "# # ### # ##### # ### ### # #",
+  "# #   # #     # #     #   # #",
+  "# ### # ### ### ##### # ### #",
+  "#     #   #     #     #     #",
+  "##### ### # ##### ######### #",
+  "#     #   #     #     T   # #",
+  "# ### ### ### ### ##### ### #",
+  "#   #     #   #     #       #",
+  "### ##### ### ##### ####### #",
+  "#   T     #     #       T   #",
+  "# ######### ### # ######### #",
+  "#         #     #         E #",
+  "##############################"
+];
+
+let playerPos = { x: 1, y: 1 };
+let chaserPos = { x: 28, y: 1 };
+let checkpoint = { ...playerPos };
+let timer = 0;
+let interval;
+const mazeContainer = document.getElementById("mazeContainer");
+const message = document.getElementById("message");
+
+function drawMaze() {
+  let display = "";
+  for (let y = 0; y < mazeData.length; y++) {
+    for (let x = 0; x < mazeData[y].length; x++) {
+      if (playerPos.x === x && playerPos.y === y) {
+        display += "@";
+      } else if (chaserPos.x === x && chaserPos.y === y) {
+        display += "X";
+      } else {
+        display += mazeData[y][x];
+      }
+    }
+    display += "\n";
+  }
+  mazeContainer.textContent = display;
+}
+
+function flashRed() {
+  flash.style.opacity = 0.5;
+  setTimeout(() => flash.style.opacity = 0, 300);
+}
+
+function startTimer() {
+  interval = setInterval(() => {
+    timer++;
+    message.textContent = `Time: ${timer}s`;
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(interval);
+}
+
+function resetToCheckpoint(reason) {
+  if (reason === "caught") {
+    flashRed();
+    caughtSound.play();
+  } else if (reason === "trap") {
+    trapSound.play();
+  }
+  playerPos = { ...checkpoint };
+  chaserPos = { x: 28, y: 1 };
+  drawMaze();
+}
+
+function isWall(x, y) {
+  return mazeData[y][x] === "#";
+}
+
+function isTrap(x, y) {
+  return mazeData[y][x] === "T";
+}
+
+function isExit(x, y) {
+  return mazeData[y][x] === "E";
+}
+
+function moveChaser() {
+  const dx = playerPos.x - chaserPos.x;
+  const dy = playerPos.y - chaserPos.y;
+  const moves = [
+    { x: chaserPos.x + Math.sign(dx), y: chaserPos.y },
+    { x: chaserPos.x, y: chaserPos.y + Math.sign(dy) },
+    { x: chaserPos.x - Math.sign(dx), y: chaserPos.y },
+    { x: chaserPos.x, y: chaserPos.y - Math.sign(dy) }
+  ];
+  for (let move of moves) {
+    if (!isWall(move.x, move.y)) {
+      chaserPos = { x: move.x, y: move.y };
+      break;
+    }
+  }
+}
+
+function movePlayer(dx, dy) {
+  const newX = playerPos.x + dx;
+  const newY = playerPos.y + dy;
+  if (!isWall(newX, newY)) {
+    playerPos = { x: newX, y: newY };
+  }
+
+  if ((playerPos.x + playerPos.y) % 8 === 0) {
+    checkpoint = { ...playerPos };
+  }
+
+  if (isTrap(playerPos.x, playerPos.y)) {
+    resetToCheckpoint("trap");
+    return;
+  }
+
+  if (isExit(playerPos.x, playerPos.y)) {
+    winSound.play();
+    stopTimer();
+    setTimeout(() => window.location.href = "home.html", 2000);
+    return;
+  }
+
+  moveChaser();
+
+  if (playerPos.x === chaserPos.x && playerPos.y === chaserPos.y) {
+    resetToCheckpoint("caught");
+    return;
+  }
+
+  drawMaze();
+}
+
+document.addEventListener("keydown", (e) => {
+  switch (e.key) {
+    case "ArrowUp": movePlayer(0, -1); break;
+    case "ArrowDown": movePlayer(0, 1); break;
+    case "ArrowLeft": movePlayer(-1, 0); break;
+    case "ArrowRight": movePlayer(1, 0); break;
+  }
+});
+
+drawMaze();
+startTimer();
+</script>
+</body>
+</html>
