@@ -57,6 +57,16 @@
       cursor: pointer;
     }
 
+    #decoder {
+      margin-top: 20px;
+      color: #00ff00;
+      font-size: 14px;
+      line-height: 1.6;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      border: 1px solid #00ff00;
+    }
+
     #loaderOverlay {
       display: none;
       flex-direction: column;
@@ -96,24 +106,25 @@
 
 <canvas id="matrixCanvas"></canvas>
 
-<!-- Background Music -->
 <audio id="gateMusic" src="sounds/intro.mp3" preload="auto" loop></audio>
 
-<!-- Cipher Input UI -->
 <div id="cipherGate">
   <h1 id="glitchCipher">#@!%$@!@^*(&%</h1>
   <p>Decrypt the phrase above to proceed:</p>
   <input type="text" id="cipherInput" placeholder="Enter decrypted phrase..." />
   <button onclick="validateCipher()">Submit</button>
+
+  <div id="decoder">
+    <strong>ROT13 Decoder Key:</strong><br>
+    A ↔ N B ↔ O C ↔ P D ↔ Q E ↔ R F ↔ S G ↔ T H ↔ U I ↔ V J ↔ W K ↔ X L ↔ Y M ↔ Z
+  </div>
 </div>
 
-<!-- Terminal Loader -->
 <div id="loaderOverlay">
   <div>[ SYSTEM UNLOCKING... ]</div>
   <div id="progressBar"><div id="barFill"></div></div>
 </div>
 
-<!-- Scripts -->
 <script>
   // Cipher animation
   window.onload = () => {
@@ -137,7 +148,6 @@
     }, 100);
   };
 
-  // Cipher check
   function validateCipher() {
     const input = document.getElementById("cipherInput").value.trim().toLowerCase();
     if (input === "cryptic comics") {
@@ -147,7 +157,6 @@
     }
   }
 
-  // Loader animation
   function launchLoader() {
     document.getElementById("cipherGate").style.display = "none";
     const overlay = document.getElementById("loaderOverlay");
@@ -164,13 +173,13 @@
     }, 80);
   }
 
-  // Matrix background
+  // Matrix effect
   const canvas = document.getElementById("matrixCanvas");
   const ctx = canvas.getContext("2d");
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const fontSize = 16;
   let drops = [];
-  const passwordLetters = "PELCGVPPBZVPF".split(""); // ROT13 of "cryptic comics"
+  const passwordLetters = "PELCGVPPBZVPF".split("");
 
   function initMatrix() {
     canvas.width = window.innerWidth;
@@ -197,7 +206,6 @@
     }
   }
 
-  // Init
   window.addEventListener("resize", initMatrix);
   window.addEventListener("load", () => {
     initMatrix();
