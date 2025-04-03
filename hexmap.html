@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>bitbyt3s // Hexmap Node</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+      overflow: hidden;
+    }
+
+    #map {
+      white-space: pre;
+      font-size: 14px;
+      line-height: 1.2em;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    #hint {
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      color: #00ff00;
+      font-size: 14px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+<div id="hint">// use WASD to explore | some tiles pulse red...</div>
+<pre id="map"></pre>
+
+<script>
+const mapEl = document.getElementById("map");
+const rows = 20, cols = 40;
+let px = parseInt(localStorage.getItem("hex_x")) || 10;
+let py = parseInt(localStorage.getItem("hex_y")) || 10;
+const flashlightRadius = 3;
+let warps = [];
+
+function generateMap() {
+  warps = [];
+  const map = [];
+  for (let y = 0; y < rows; y++) {
+    const row = [];
+    for (let x = 0; x < cols; x++) {
+      const isPlayer = (x === px && y === py);
+      const dx = x - px;
+      const dy = y - py;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (isPlayer) {
+        row.push('P');
+      } else if (distance <= flashlightRadius) {
+        if (Math.random() < 0.02) {
+          warps.push({ x, y });
+          row.push('%'); // warp tile
+        } else {
+          row.push('.');
+        }
+      } else {
+        row.push(' ');
+      }
+    }
+    map.push(row);
+  }
+  mapEl.textContent = map.map(r => r.join('')).join('\n');
+}
+
+function move(dx, dy) {
+  const newX = px + dx;
+  const newY = py + dy;
+  if (newX < 0 || newY < 0 || newX >= cols || newY >= rows) return;
+  px = newX;
+  py = newY;
+  localStorage.setItem("hex_x", px);
+  localStorage.setItem("hex_y", py);
+  generateMap();
+
+  if (warps.some(w => w.x === px && w.y === py)) {
+    window.location.href = "maze.html";
+  }
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "w") move(0, -1);
+  if (e.key === "s") move(0, 1);
+  if (e.key === "a") move(-1, 0);
+  if (e.key === "d") move(1, 0);
+});
+
+generateMap();
+</script>
+</body>
+</html>
