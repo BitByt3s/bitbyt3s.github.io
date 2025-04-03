@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>bitbyt3s // Ghost AI Node</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+      overflow: hidden;
+    }
+
+    #terminal {
+      padding: 20px;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      height: 100vh;
+    }
+
+    input {
+      width: 100%;
+      background: black;
+      color: #00ff00;
+      border: none;
+      font-family: monospace;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .glitch {
+      animation: glitch 1s infinite;
+    }
+
+    @keyframes glitch {
+      0%, 100% { text-shadow: 0 0 2px #00ff00; }
+      50% { text-shadow: -1px 0 4px #ff0000; }
+    }
+  </style>
+</head>
+<body>
+<div id="terminal">[ SYSTEM LINK ESTABLISHED... ]
+[ GHOST AI CHANNEL ACTIVE ]
+
+> _</div>
+
+<script>
+const terminal = document.getElementById("terminal");
+const prompts = [
+  "The system watches. It never forgets.",
+  "Echoes in the code... what did you just wake?",
+  "You are not alone.",
+  "Binary screams... can you hear them?",
+  "ERROR 404: Reality Not Found",
+  "It said your name. You didn't type it.",
+  "What was lost will soon return.",
+  "Key detected. Decryption sequence aborted.",
+  "A shadow just passed behind your screen..."
+];
+
+let buffer = "> ";
+const inputEl = document.createElement("input");
+inputEl.type = "text";
+terminal.appendChild(inputEl);
+inputEl.focus();
+
+inputEl.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const val = inputEl.value.trim();
+    terminal.removeChild(inputEl);
+    terminal.innerHTML += val + "\n";
+
+    const reply = prompts[Math.floor(Math.random() * prompts.length)];
+    terminal.innerHTML += "[ghost-ai] > " + reply + "\n\n> ";
+
+    inputEl.value = "";
+    terminal.appendChild(inputEl);
+    inputEl.focus();
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+});
+</script>
+</body>
+</html>
