@@ -73,8 +73,15 @@ inputEl.addEventListener("keydown", (e) => {
     terminal.removeChild(inputEl);
     terminal.innerHTML += val + "\n";
 
-    const reply = prompts[Math.floor(Math.random() * prompts.length)];
-    terminal.innerHTML += "[ghost-ai] > " + reply + "\n\n> ";
+    if (val.toLowerCase() === "sudo home") {
+      terminal.innerHTML += "[ghost-ai] > Overriding... home protocol unlocked.\n\n> ";
+      setTimeout(() => {
+        window.location.href = "home.html";
+      }, 1500);
+    } else {
+      const reply = prompts[Math.floor(Math.random() * prompts.length)];
+      terminal.innerHTML += "[ghost-ai] > " + reply + "\n\n> ";
+    }
 
     inputEl.value = "";
     terminal.appendChild(inputEl);
