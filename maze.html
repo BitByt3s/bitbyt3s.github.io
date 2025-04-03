@@ -62,7 +62,7 @@
 </head>
 <body>
 <div id="startScreen">>> ENTER THE MAZE</div>
-<div id="overlay">[ Caught! Restarting... ]</div>
+<div id="overlay">[ Resetting... ]</div>
 <div id="maze" style="display: none;"></div>
 
 <audio id="bgMusic" src="sounds/intro.mp3" preload="auto" loop></audio>
@@ -78,13 +78,14 @@ const startScreen = document.getElementById("startScreen");
 const width = 25, height = 15;
 let maze = [], px = 1, py = 1, ex = 23, ey = 13, chaser = { x: 23, y: 1 };
 
-// Generate styled maze
 function generateMaze() {
   maze = Array.from({ length: height }, (_, y) =>
     Array.from({ length: width }, (_, x) => {
       if (y === 0 || y === height - 1 || x === 0 || x === width - 1) return '█';
-      if (Math.random() > 0.75) return '█';
-      if (Math.random() > 0.85) return '^';
+      const rand = Math.random();
+      if (rand > 0.96) return 'T';
+      if (rand > 0.85) return '^';
+      if (rand > 0.75) return '█';
       return '·';
     })
   );
@@ -97,32 +98,44 @@ function drawMaze() {
   mazeEl.textContent = maze.map(row => row.join('')).join('\n');
 }
 
-function play(soundId) {
-  const audio = document.getElementById(soundId);
+function play(id) {
+  const audio = document.getElementById(id);
   if (audio) {
     audio.currentTime = 0;
     audio.play().catch(() => {});
   }
 }
 
-function resetGame(msg) {
-  overlay.textContent = msg;
+function resetPlayer(reason = "Resetting...") {
+  overlay.textContent = `[ ${reason} ]`;
   overlay.style.display = "flex";
-  setTimeout(() => location.reload(), 2000);
+  setTimeout(() => {
+    overlay.style.display = "none";
+    maze[py][px] = '·';
+    px = 1;
+    py = 1;
+    maze[py][px] = 'P';
+    drawMaze();
+  }, 1200);
 }
 
 function movePlayer(dx, dy) {
   const nx = px + dx;
   const ny = py + dy;
+  const tile = maze[ny][nx];
+  if (tile === '█') return;
 
-  if (maze[ny][nx] === '█') return;
-  if (maze[ny][nx] === 'E') {
+  if (tile === '^' || tile === 'T') {
+    play('trapSound');
+    resetPlayer("Trap triggered");
+    return;
+  }
+
+  if (tile === 'E') {
     play('winSound');
     setTimeout(() => window.location.href = "home.html", 1000);
     return;
   }
-
-  if (maze[ny][nx] === '^') play('trapSound');
 
   maze[py][px] = '·';
   px = nx;
@@ -135,23 +148,24 @@ function movePlayer(dx, dy) {
 
 function moveChaser() {
   maze[chaser.y][chaser.x] = '·';
+
   let best = { dx: 0, dy: 0, dist: Infinity };
   const dirs = [{ dx:0,dy:-1 },{ dx:0,dy:1 },{ dx:-1,dy:0 },{ dx:1,dy:0 }];
   dirs.forEach(d => {
     const nx = chaser.x + d.dx;
     const ny = chaser.y + d.dy;
-    if (maze[ny][nx] !== '█') {
+    if (maze[ny] && maze[ny][nx] && maze[ny][nx] !== '█') {
       const dist = Math.abs(nx - px) + Math.abs(ny - py);
-      if (dist < best.dist) {
-        best = { dx: d.dx, dy: d.dy, dist };
-      }
+      if (dist < best.dist) best = { dx: d.dx, dy: d.dy, dist };
     }
   });
+
   chaser.x += best.dx;
   chaser.y += best.dy;
+
   if (chaser.x === px && chaser.y === py) {
     play('caughtSound');
-    resetGame("[ Caught! Restarting... ]");
+    resetPlayer("Caught by X");
   } else {
     maze[chaser.y][chaser.x] = 'X';
   }
