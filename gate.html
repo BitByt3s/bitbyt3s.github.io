@@ -148,23 +148,43 @@
       opacity: 1;
       text-shadow: 0 0 10px #00ff00;
     }
+
+    /* Bonus overlay */
+    #bonusOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    #bonusOverlay #bonusMessage {
+      font-size: 24px;
+      animation: glitch 1.5s infinite;
+    }
   </style>
 </head>
 <body>
 
 <canvas id="matrixCanvas"></canvas>
 
-<!-- Looping Music -->
+<!-- Music -->
 <audio id="loopMusic" src="sounds/intro.mp3" autoplay loop></audio>
 
-<!-- Cipher Entry -->
+<!-- Main Cipher Gate -->
 <div id="cipherGate">
   <h1 id="glitchCipher">#@!%$@!@^*(&%</h1>
   <p>Decrypt the phrase above to proceed:</p>
   <input type="text" id="cipherInput" placeholder="Enter decrypted phrase..." />
   <button onclick="validateCipher()">Submit</button>
 
-  <!-- Hidden Decoder Easter Egg -->
   <div id="easterEgg" onclick="revealDecoder()">[ decryptor patch: cracked ]</div>
 
   <!-- ROT13 Decoder -->
@@ -177,14 +197,19 @@
   </div>
 </div>
 
-<!-- Loading Overlay -->
+<!-- Loader -->
 <div id="loaderOverlay">
   <div>[ SYSTEM UNLOCKING... ]</div>
   <div id="progressBar"><div id="barFill"></div></div>
 </div>
 
+<!-- Bonus Overlay -->
+<div id="bonusOverlay">
+  <div id="bonusMessage"></div>
+</div>
+
 <script>
-// Animate cipher text glitch
+// Animate glitch-to-cipher reveal
 window.onload = () => {
   const finalCipher = "Pelcgvp Pbzvpf";
   const glitchChars = "!@#$%^&*()_+=<>?~";
@@ -206,7 +231,7 @@ window.onload = () => {
   }, 100);
 };
 
-// Check cipher input
+// Cipher validation
 function validateCipher() {
   const input = document.getElementById("cipherInput").value.trim().toLowerCase();
   if (input === "cryptic comics") {
@@ -216,7 +241,7 @@ function validateCipher() {
   }
 }
 
-// Fake loading + redirect
+// Loader transition
 function launchLoader() {
   document.getElementById("cipherGate").style.display = "none";
   const overlay = document.getElementById("loaderOverlay");
@@ -233,7 +258,7 @@ function launchLoader() {
   }, 80);
 }
 
-// Show decoder
+// Reveal ROT13 Decoder
 function revealDecoder() {
   const decoder = document.getElementById("rot13Decoder");
   decoder.classList.add("revealed");
@@ -249,17 +274,24 @@ function decodeROT13() {
   document.getElementById("rot13Output").textContent = output;
 }
 
-// Matrix effect with red cipher letters
+// Matrix background with red leaks
 const canvas = document.getElementById("matrixCanvas");
 const ctx = canvas.getContext("2d");
-canvas.height = window.innerHeight;
-canvas.width = window.innerWidth;
 
-const letters = "01";
-const passwordLetters = "crypticcomics".split('');
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
 const fontSize = 16;
-const columns = canvas.width / fontSize;
-const drops = Array.from({ length: columns }).fill(1);
+let drops = Array(Math.floor(window.innerWidth / fontSize)).fill(1);
+const letters = "01";
+const passwordLetters = "crypticcomics".split("");
+const revealedLetters = new Set();
+let bonusTriggered = false;
 
 function drawMatrix() {
   ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
@@ -273,6 +305,7 @@ function drawMatrix() {
     if (Math.random() < 0.005) {
       char = passwordLetters[Math.floor(Math.random() * passwordLetters.length)];
       useRed = true;
+      revealedLetters.add(char);
     } else {
       char = letters.charAt(Math.floor(Math.random() * letters.length));
     }
@@ -285,14 +318,29 @@ function drawMatrix() {
     }
     drops[i]++;
   }
+
+  // Bonus animation trigger
+  if (!bonusTriggered && passwordLetters.every(l => revealedLetters.has(l))) {
+    triggerBonusOverlay();
+    bonusTriggered = true;
+  }
 }
 
 setInterval(drawMatrix, 50);
 
-window.addEventListener("resize", () => {
-  canvas.height = window.innerHeight;
-  canvas.width = window.innerWidth;
-});
+// Terminal-style bonus message
+function triggerBonusOverlay() {
+  const overlay = document.getElementById("bonusOverlay");
+  const message = document.getElementById("bonusMessage");
+  overlay.style.display = "flex";
+  message.innerText = "> ACCESS SEQUENCE RECOGNIZED\n> WELCOME, DECRYPTOR";
+
+  setTimeout(() => {
+    overlay.style.transition = "opacity 2s ease";
+    overlay.style.opacity = 0;
+    setTimeout(() => overlay.remove(), 2000);
+  }, 4000);
+}
 </script>
 
 </body>
