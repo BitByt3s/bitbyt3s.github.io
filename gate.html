@@ -13,12 +13,15 @@
       font-family: monospace;
       overflow-x: hidden;
       overflow-y: auto;
+      position: relative;
     }
 
     canvas {
       position: fixed;
       top: 0;
       left: 0;
+      width: 100vw;
+      height: 100vh;
       z-index: -1;
     }
 
@@ -149,7 +152,6 @@
       text-shadow: 0 0 10px #00ff00;
     }
 
-    /* Bonus overlay */
     #bonusOverlay {
       display: none;
       position: fixed;
@@ -175,10 +177,8 @@
 
 <canvas id="matrixCanvas"></canvas>
 
-<!-- Music -->
 <audio id="loopMusic" src="sounds/intro.mp3" autoplay loop></audio>
 
-<!-- Main Cipher Gate -->
 <div id="cipherGate">
   <h1 id="glitchCipher">#@!%$@!@^*(&%</h1>
   <p>Decrypt the phrase above to proceed:</p>
@@ -187,7 +187,6 @@
 
   <div id="easterEgg" onclick="revealDecoder()">[ decryptor patch: cracked ]</div>
 
-  <!-- ROT13 Decoder -->
   <div class="rot13-box" id="rot13Decoder">
     <h2>> ROT13 Decoder</h2>
     <p>Use this tool to decode encrypted messages found on the system.</p>
@@ -197,19 +196,16 @@
   </div>
 </div>
 
-<!-- Loader -->
 <div id="loaderOverlay">
   <div>[ SYSTEM UNLOCKING... ]</div>
   <div id="progressBar"><div id="barFill"></div></div>
 </div>
 
-<!-- Bonus Overlay -->
 <div id="bonusOverlay">
   <div id="bonusMessage"></div>
 </div>
 
 <script>
-// Animate glitch-to-cipher reveal
 window.onload = () => {
   const finalCipher = "Pelcgvp Pbzvpf";
   const glitchChars = "!@#$%^&*()_+=<>?~";
@@ -231,7 +227,6 @@ window.onload = () => {
   }, 100);
 };
 
-// Cipher validation
 function validateCipher() {
   const input = document.getElementById("cipherInput").value.trim().toLowerCase();
   if (input === "cryptic comics") {
@@ -241,7 +236,6 @@ function validateCipher() {
   }
 }
 
-// Loader transition
 function launchLoader() {
   document.getElementById("cipherGate").style.display = "none";
   const overlay = document.getElementById("loaderOverlay");
@@ -258,13 +252,10 @@ function launchLoader() {
   }, 80);
 }
 
-// Reveal ROT13 Decoder
 function revealDecoder() {
-  const decoder = document.getElementById("rot13Decoder");
-  decoder.classList.add("revealed");
+  document.getElementById("rot13Decoder").classList.add("revealed");
 }
 
-// Decode ROT13
 function decodeROT13() {
   const input = document.getElementById("rot13Input").value;
   const output = input.replace(/[a-zA-Z]/g, function (char) {
@@ -274,7 +265,7 @@ function decodeROT13() {
   document.getElementById("rot13Output").textContent = output;
 }
 
-// Matrix background with red leaks
+// Matrix + red leaks
 const canvas = document.getElementById("matrixCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -282,7 +273,6 @@ function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 }
-
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
@@ -319,16 +309,13 @@ function drawMatrix() {
     drops[i]++;
   }
 
-  // Bonus animation trigger
   if (!bonusTriggered && passwordLetters.every(l => revealedLetters.has(l))) {
     triggerBonusOverlay();
     bonusTriggered = true;
   }
 }
-
 setInterval(drawMatrix, 50);
 
-// Terminal-style bonus message
 function triggerBonusOverlay() {
   const overlay = document.getElementById("bonusOverlay");
   const message = document.getElementById("bonusMessage");
@@ -342,6 +329,5 @@ function triggerBonusOverlay() {
   }, 4000);
 }
 </script>
-
 </body>
 </html>
