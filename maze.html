@@ -1,132 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>bitbyt3s // Maze Game</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: black;
-      color: #00ff00;
-      font-family: monospace;
-      overflow: hidden;
-    }
+  <meta charset="UTF-8" />
+  <title>bitbyt3s // Maze Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+      overflow: hidden;
+    }
 
-    #startScreen {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: black;
-      color: #00ff00;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 2em;
-      z-index: 10;
-      cursor: pointer;
-      animation: flicker 2s infinite;
-    }
+    #startScreen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: black;
+      color: #00ff00;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2em;
+      z-index: 10;
+      cursor: pointer;
+      animation: flicker 2s infinite;
+    }
 
-    #hud {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(0, 255, 0, 0.05);
-      border: 1px solid #00ff00;
-      padding: 8px;
-      font-size: 14px;
-      z-index: 9;
-    }
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 255, 0, 0.05);
+      border: 1px solid #00ff00;
+      padding: 8px;
+      font-size: 14px;
+      z-index: 9;
+    }
 
-    #maze {
-      white-space: pre;
-      font-size: 16px;
-      line-height: 18px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 80vh;
-      text-align: left;
-    }
+    #maze {
+      white-space: pre;
+      font-size: 16px;
+      line-height: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
+      text-align: left;
+    }
 
-    #leaderboard {
-      width: 100%;
-      padding: 10px;
-      text-align: center;
-      font-size: 14px;
-      background: rgba(0,255,0,0.03);
-      border-top: 1px solid #00ff00;
-    }
+    #leaderboard {
+      width: 100%;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+      background: rgba(0,255,0,0.03);
+      border-top: 1px solid #00ff00;
+    }
 
-    #overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: black;
-      color: #00ff00;
-      font-family: monospace;
-      font-size: 2em;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 99;
-    }
+    #overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: black;
+      color: #00ff00;
+      font-family: monospace;
+      font-size: 2em;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 99;
+    }
 
-    #winScreen {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: black;
-      color: #00ff00;
-      font-family: monospace;
-      z-index: 1000;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
+    #winScreen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+      z-index: 1000;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
 
-    #winScreen input {
-      margin-top: 10px;
-      padding: 5px;
-      background: black;
-      border: 1px solid #00ff00;
-      color: #00ff00;
-      font-family: monospace;
-    }
+    #winScreen input {
+      margin-top: 10px;
+      padding: 5px;
+      background: black;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      font-family: monospace;
+    }
 
-    #winScreen button {
-      margin-top: 10px;
-      background: black;
-      color: #00ff00;
-      border: 1px solid #00ff00;
-      padding: 5px 15px;
-      cursor: pointer;
-    }
+    #winScreen button {
+      margin-top: 10px;
+      background: black;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      padding: 5px 15px;
+      cursor: pointer;
+    }
 
-    @keyframes flicker {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-  </style>
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+  </style>
 </head>
 <body>
+
 <div id="startScreen">ENTER THE MAZE</div>
 <div id="hud">Keys: <span id="keyDisplay">[ ]</span> | Time: <span id="timer">00:00</span></div>
 <div id="maze"></div>
 <div id="leaderboard">
-  <strong>Top 3 Times:</strong>
-  <ul id="leaderboardList" style="list-style:none; padding:0; margin:0;"></ul>
+  <strong>Top 3 Times:</strong>
+  <ul id="leaderboardList" style="list-style:none; padding:0; margin:0;"></ul>
 </div>
 
 <div id="overlay"></div>
 <div id="winScreen">
-  <div>YOU ESCAPED THE MAZE!</div>
-  <div>Time: <span id="finalTime"></span></div>
-  <input id="nickname" placeholder="Enter nickname..." />
-  <button onclick="submitScore()">Submit</button>
+  <div>YOU ESCAPED THE MAZE!</div>
+  <div>Time: <span id="finalTime"></span></div>
+  <input id="nickname" placeholder="Enter nickname..." />
+  <button onclick="submitScore()">Submit</button>
 </div>
 
 <audio id="bgm" src="sounds/intro.mp3" preload="auto" loop></audio>
@@ -148,151 +149,151 @@ const keyDisplay = document.getElementById("keyDisplay");
 
 const layout = `
 ####################
-#P  R D     ^   Y  #
+#P  R D     ^   Y  #
 ### ### ######## ###
-#   G Z     T     #
+#   G Z     T     #
 # ### ### ###### ##
-#M     ^      B L #
+#M     ^      B L #
 ### ####### ### ###
-#    X     ^      #
-###########   E ###
-#        Y    C   #
+#    X     ^      #
+###########   E ###
+#        Y    C   #
 ####################
 `;
 
 function initMaze() {
-  mazeMap = layout.trim().split("\n").map(row => row.split(""));
+  mazeMap = layout.trim().split("\n").map(row => row.split(""));
 }
 
 function renderMaze() {
-  let display = "";
-  for (let y = 0; y < mazeMap.length; y++) {
-    for (let x = 0; x < mazeMap[y].length; x++) {
-      if (player.x === x && player.y === y) display += "☻";
-      else if (chaser.x === x && chaser.y === y) display += "X";
-      else if (teleporters.some(t => t.x === x && t.y === y)) display += "Y";
-      else display += mazeMap[y][x];
-    }
-    display += "\n";
-  }
-  maze.textContent = display;
-  keyDisplay.textContent = `[ ${keys.join(", ")} ]`;
+  let display = "";
+  for (let y = 0; y < mazeMap.length; y++) {
+    for (let x = 0; x < mazeMap[y].length; x++) {
+      if (player.x === x && player.y === y) display += "☻";
+      else if (chaser.x === x && chaser.y === y) display += "X";
+      else if (teleporters.some(t => t.x === x && t.y === y)) display += "Y";
+      else display += mazeMap[y][x];
+    }
+    display += "\n";
+  }
+  maze.textContent = display;
+  keyDisplay.textContent = `[ ${keys.join(", ")} ]`;
 }
 
 function movePlayer(dx, dy) {
-  const nx = player.x + dx;
-  const ny = player.y + dy;
-  const cell = mazeMap[ny]?.[nx];
-  if (!cell || cell === "#") return;
-  if (["D","Z","L"].includes(cell) && !keys.includes(cell)) return;
+  const nx = player.x + dx;
+  const ny = player.y + dy;
+  const cell = mazeMap[ny]?.[nx];
+  if (!cell || cell === "#") return;
+  if (["D","Z","L"].includes(cell) && !keys.includes(cell)) return;
 
-  if (["R","G","B","M"].includes(cell) && !keys.includes(cell)) keys.push(cell);
-  if (cell === "^" || cell === "T") {
-    document.getElementById("trapSound").play();
-    resetPlayer();
-    return;
-  }
-  if (cell === "E" && keys.includes("M")) winMaze();
-  if (cell === "C") alert("Hint: CTRL + SHIFT + H is more than just a shortcut...");
-  player.x = nx; player.y = ny;
-  renderMaze();
+  if (["R","G","B","M"].includes(cell) && !keys.includes(cell)) keys.push(cell);
+  if (cell === "^" || cell === "T") {
+    document.getElementById("trapSound").play();
+    resetPlayer();
+    return;
+  }
+  if (cell === "E" && keys.includes("M")) winMaze();
+  if (cell === "C") alert("Hint: CTRL + SHIFT + H is more than just a shortcut...");
+  player.x = nx; player.y = ny;
+  renderMaze();
 }
 
 function resetPlayer() {
-  player.x = 1;
-  player.y = 1;
-  renderMaze();
+  player.x = 1;
+  player.y = 1;
+  renderMaze();
 }
 
 function moveChaser() {
-  const dx = Math.sign(player.x - chaser.x);
-  const dy = Math.sign(player.y - chaser.y);
-  const nx = chaser.x + dx;
-  const ny = chaser.y + dy;
-  if (mazeMap[ny]?.[nx] !== "#") {
-    chaser.x = nx;
-    chaser.y = ny;
-    if (nx === player.x && ny === player.y) {
-      document.getElementById("caughtSound").play();
-      resetPlayer();
-    }
-  }
-  renderMaze();
+  const dx = Math.sign(player.x - chaser.x);
+  const dy = Math.sign(player.y - chaser.y);
+  const nx = chaser.x + dx;
+  const ny = chaser.y + dy;
+  if (mazeMap[ny]?.[nx] !== "#") {
+    chaser.x = nx;
+    chaser.y = ny;
+    if (nx === player.x && ny === player.y) {
+      document.getElementById("caughtSound").play();
+      resetPlayer();
+    }
+  }
+  renderMaze();
 }
 
 function teleportEnemies() {
-  teleporters.forEach(t => {
-    let x = Math.floor(Math.random() * mazeMap[0].length);
-    let y = Math.floor(Math.random() * mazeMap.length);
-    while (mazeMap[y][x] === "#") {
-      x = Math.floor(Math.random() * mazeMap[0].length);
-      y = Math.floor(Math.random() * mazeMap.length);
-    }
-    t.x = x;
-    t.y = y;
-  });
-  renderMaze();
+  teleporters.forEach(t => {
+    let x = Math.floor(Math.random() * mazeMap[0].length);
+    let y = Math.floor(Math.random() * mazeMap.length);
+    while (mazeMap[y][x] === "#") {
+      x = Math.floor(Math.random() * mazeMap[0].length);
+      y = Math.floor(Math.random() * mazeMap.length);
+    }
+    t.x = x;
+    t.y = y;
+  });
+  renderMaze();
 }
 
 function winMaze() {
-  clearInterval(timerInterval);
-  clearInterval(chaserInterval);
-  clearInterval(teleInterval);
-  document.getElementById("bgm").pause();
-  document.getElementById("winSound").play();
-  document.getElementById("finalTime").textContent = formatTime(timer);
-  document.getElementById("winScreen").style.display = "flex";
+  clearInterval(timerInterval);
+  clearInterval(chaserInterval);
+  clearInterval(teleInterval);
+  document.getElementById("bgm").pause();
+  document.getElementById("winSound").play();
+  document.getElementById("finalTime").textContent = formatTime(timer);
+  document.getElementById("winScreen").style.display = "flex";
 }
 
 function submitScore() {
-  const name = document.getElementById("nickname").value.trim();
-  if (!name) return;
-  const scores = JSON.parse(localStorage.getItem("mazeScores") || "[]");
-  scores.push({ name, time: timer });
-  scores.sort((a, b) => a.time - b.time);
-  localStorage.setItem("mazeScores", JSON.stringify(scores.slice(0, 3)));
-  window.location.href = "home.html";
+  const name = document.getElementById("nickname").value.trim();
+  if (!name) return;
+  const scores = JSON.parse(localStorage.getItem("mazeScores") || "[]");
+  scores.push({ name, time: timer });
+  scores.sort((a, b) => a.time - b.time);
+  localStorage.setItem("mazeScores", JSON.stringify(scores.slice(0, 3)));
+  window.location.href = "home.html";
 }
 
 function formatTime(sec) {
-  const m = String(Math.floor(sec / 60)).padStart(2, "0");
-  const s = String(sec % 60).padStart(2, "0");
-  return `${m}:${s}`;
+  const m = String(Math.floor(sec / 60)).padStart(2, "0");
+  const s = String(sec % 60).padStart(2, "0");
+  return `${m}:${s}`;
 }
 
 function updateLeaderboard() {
-  const scores = JSON.parse(localStorage.getItem("mazeScores") || "[]");
-  const list = document.getElementById("leaderboardList");
-  list.innerHTML = "";
-  scores.forEach(s => {
-    const li = document.createElement("li");
-    li.textContent = `${s.name}: ${formatTime(s.time)}`;
-    list.appendChild(li);
-  });
+  const scores = JSON.parse(localStorage.getItem("mazeScores") || "[]");
+  const list = document.getElementById("leaderboardList");
+  list.innerHTML = "";
+  scores.forEach(s => {
+    const li = document.createElement("li");
+    li.textContent = `${s.name}: ${formatTime(s.time)}`;
+    list.appendChild(li);
+  });
 }
 
 document.getElementById("startScreen").addEventListener("click", () => {
-  document.getElementById("startScreen").style.display = "none";
-  initMaze();
-  renderMaze();
-  started = true;
-  document.getElementById("bgm").play();
-  timerInterval = setInterval(() => {
-    timer++;
-    document.getElementById("timer").textContent = formatTime(timer);
-  }, 1000);
-  chaserInterval = setInterval(moveChaser, 600);
-  teleInterval = setInterval(teleportEnemies, 5000);
-  updateLeaderboard();
+  document.getElementById("startScreen").style.display = "none";
+  initMaze();
+  renderMaze();
+  started = true;
+  document.getElementById("bgm").play();
+  timerInterval = setInterval(() => {
+    timer++;
+    document.getElementById("timer").textContent = formatTime(timer);
+  }, 1000);
+  chaserInterval = setInterval(moveChaser, 600);
+  teleInterval = setInterval(teleportEnemies, 5000);
+  updateLeaderboard();
 });
 
 document.addEventListener("keydown", e => {
-  if (!started) return;
-  const k = e.key.toLowerCase();
-  if (k === "arrowup") movePlayer(0, -1);
-  if (k === "arrowdown") movePlayer(0, 1);
-  if (k === "arrowleft") movePlayer(-1, 0);
-  if (k === "arrowright") movePlayer(1, 0);
+  if (!started) return;
+  const k = e.key.toLowerCase();
+  if (k === "arrowup") movePlayer(0, -1);
+  if (k === "arrowdown") movePlayer(0, 1);
+  if (k === "arrowleft") movePlayer(-1, 0);
+  if (k === "arrowright") movePlayer(1, 0);
 });
 </script>
 </body>
