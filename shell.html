@@ -89,9 +89,17 @@ function handle(cmd) {
   const base = args[0];
   const param = args[1];
 
+  if (base === "sudo" && param === "home") {
+    write("[ sudo override accepted... redirecting to home.html ]");
+    setTimeout(() => {
+      window.location.href = "home.html";
+    }, 1000);
+    return;
+  }
+
   switch (base) {
     case "help":
-      write("Available commands:\ncd [dir], ls, clear, exit");
+      write("Available commands:\ncd [dir], ls, clear, exit, sudo home");
       break;
     case "ls":
       const files = fs[current] || [];
