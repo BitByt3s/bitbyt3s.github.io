@@ -29,35 +29,18 @@
       animation: flicker 2s infinite;
     }
 
-    #mazeWrapper {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      width: 100vw;
-      justify-content: center;
-      align-items: center;
-    }
-
     #maze {
       white-space: pre;
       font-size: 16px;
       line-height: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
       text-align: left;
     }
 
-    #hud {
-      display: flex;
-      justify-content: space-between;
-      width: 80%;
-      max-width: 800px;
-      padding: 10px;
-    }
-
-    #keysCollected, #timer, #hint {
-      font-size: 14px;
-    }
-
-    #overlay, #winScreen {
+    #overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
@@ -69,7 +52,16 @@
       justify-content: center;
       align-items: center;
       z-index: 99;
-      flex-direction: column;
+    }
+
+    #leaderboard {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.8);
+      border: 1px solid #00ff00;
+      padding: 10px;
+      font-size: 14px;
     }
 
     @keyframes flicker {
@@ -77,38 +69,22 @@
       50% { opacity: 0.4; }
     }
 
-    #leaderboard {
-      position: fixed;
-      bottom: 10px;
+    #keysCollected {
+      position: absolute;
+      top: 10px;
       left: 10px;
-      font-size: 12px;
-      background: rgba(0,255,0,0.1);
-      padding: 8px;
       border: 1px solid #00ff00;
+      padding: 5px;
+      background: rgba(0,0,0,0.6);
     }
   </style>
 </head>
 <body>
 <div id="startScreen">>> ENTER THE MAZE</div>
 <div id="overlay">[ Resetting... ]</div>
-<div id="winScreen">
-  <div>[ WINNER ]</div>
-  <div>Enter your nickname:</div>
-  <input type="text" id="nickname" />
-  <button onclick="submitScore()">Submit</button>
-</div>
-<div id="mazeWrapper" style="display:none;">
-  <div id="hud">
-    <div id="keysCollected">Keys: 0</div>
-    <div id="timer">Time: 0s</div>
-    <div id="hint">Hint: Decoding opens new doors.</div>
-  </div>
-  <div id="maze"></div>
-</div>
-<div id="leaderboard">
-  <b>Top 3 Times</b><br />
-  <div id="scores">None yet</div>
-</div>
+<div id="keysCollected">Keys: <span id="keyDisplay">0</span></div>
+<div id="maze" style="display: none;"></div>
+<div id="leaderboard">Loading leaderboard...</div>
 
 <audio id="bgMusic" src="sounds/intro.mp3" preload="auto" loop></audio>
 <audio id="trapSound" src="sounds/traps.mp3" preload="auto"></audio>
@@ -119,39 +95,27 @@
 const mazeEl = document.getElementById("maze");
 const overlay = document.getElementById("overlay");
 const startScreen = document.getElementById("startScreen");
-const winScreen = document.getElementById("winScreen");
-const keysCollectedEl = document.getElementById("keysCollected");
-const timerEl = document.getElementById("timer");
-const scoresEl = document.getElementById("scores");
+const keyDisplay = document.getElementById("keyDisplay");
+const leaderboardDiv = document.getElementById("leaderboard");
 
 const width = 25, height = 15;
-let maze = [], px = 1, py = 1, ex = 23, ey = 13;
-let chaser = { x: 23, y: 1 }, keys = [], keysCollected = 0;
-let time = 0, timerInterval;
-let leaderboard = [];
+let maze = [], px = 1, py = 1, ex = 23, ey = 13, chaser = { x: 23, y: 1 };
+let startTime = 0, keys = 0, requiredKeys = 1;
+
+const API = "https://script.google.com/macros/s/AKfycbyGEVMZ5z06Xg7Lt7xpwYZOo5GJlqmN_nL3jyO164nXiCumMPOnd4eyEbzQqaeBXdafvw/exec";
 
 function generateMaze() {
   maze = Array.from({ length: height }, (_, y) =>
     Array.from({ length: width }, (_, x) => {
       if (y === 0 || y === height - 1 || x === 0 || x === width - 1) return '█';
       const rand = Math.random();
-      if (rand > 0.98) return 'T';
-      if (rand > 0.9) return '^';
-      if (rand > 0.8) return '█';
+      if (rand > 0.97) return 'K';
+      if (rand > 0.95) return 'T';
+      if (rand > 0.85) return '^';
+      if (rand > 0.75) return '█';
       return '·';
     })
   );
-
-  keys = [];
-  while (keys.length < 3) {
-    let kx = Math.floor(Math.random() * width);
-    let ky = Math.floor(Math.random() * height);
-    if (maze[ky][kx] === '·') {
-      maze[ky][kx] = 'K';
-      keys.push({ x: kx, y: ky });
-    }
-  }
-
   maze[py][px] = 'P';
   maze[ey][ex] = 'E';
   maze[chaser.y][chaser.x] = 'X';
@@ -159,7 +123,7 @@ function generateMaze() {
 
 function drawMaze() {
   mazeEl.textContent = maze.map(row => row.join('')).join('\n');
-  keysCollectedEl.textContent = `Keys: ${keysCollected}`;
+  keyDisplay.textContent = keys;
 }
 
 function play(id) {
@@ -176,7 +140,7 @@ function resetPlayer(reason = "Resetting...") {
   setTimeout(() => {
     overlay.style.display = "none";
     maze[py][px] = '·';
-    px = 1; py = 1;
+    px = 1; py = 1; keys = 0;
     maze[py][px] = 'P';
     drawMaze();
   }, 1200);
@@ -195,23 +159,35 @@ function movePlayer(dx, dy) {
   }
 
   if (tile === 'K') {
-    keysCollected++;
-    maze[ny][nx] = '·';
+    keys++;
   }
 
   if (tile === 'E') {
-    if (keysCollected >= 3) {
+    if (keys >= requiredKeys) {
       play('winSound');
-      clearInterval(timerInterval);
-      winScreen.style.display = "flex";
+      const completionTime = Math.floor((Date.now() - startTime) / 1000);
+      const nickname = prompt("You won! Enter nickname for leaderboard:");
+      if (nickname) {
+        fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nickname, time: completionTime })
+        }).then(() => {
+          window.location.href = "home.html";
+        });
+      } else {
+        window.location.href = "home.html";
+      }
+      return;
     } else {
-      alert("You need all 3 keys!");
+      alert(`You need at least ${requiredKeys} key(s) to unlock the exit.`);
       return;
     }
   }
 
   maze[py][px] = '·';
-  px = nx; py = ny;
+  px = nx;
+  py = ny;
   maze[py][px] = 'P';
 
   moveChaser();
@@ -220,22 +196,17 @@ function movePlayer(dx, dy) {
 
 function moveChaser() {
   maze[chaser.y][chaser.x] = '·';
-  const dirs = [
-    { dx: 0, dy: -1 },
-    { dx: 0, dy: 1 },
-    { dx: -1, dy: 0 },
-    { dx: 1, dy: 0 }
-  ];
-  let best = { dx: 0, dy: 0, dist: Infinity };
 
-  for (let d of dirs) {
-    let nx = chaser.x + d.dx;
-    let ny = chaser.y + d.dy;
+  let best = { dx: 0, dy: 0, dist: Infinity };
+  const dirs = [{ dx:0,dy:-1 },{ dx:0,dy:1 },{ dx:-1,dy:0 },{ dx:1,dy:0 }];
+  dirs.forEach(d => {
+    const nx = chaser.x + d.dx;
+    const ny = chaser.y + d.dy;
     if (maze[ny] && maze[ny][nx] && maze[ny][nx] !== '█') {
-      let dist = Math.abs(nx - px) + Math.abs(ny - py);
+      const dist = Math.abs(nx - px) + Math.abs(ny - py);
       if (dist < best.dist) best = { dx: d.dx, dy: d.dy, dist };
     }
-  }
+  });
 
   chaser.x += best.dx;
   chaser.y += best.dy;
@@ -248,38 +219,35 @@ function moveChaser() {
   }
 }
 
-function startGame() {
-  startScreen.style.display = "none";
-  document.getElementById("mazeWrapper").style.display = "flex";
-  generateMaze();
-  drawMaze();
-  time = 0;
-  timerInterval = setInterval(() => {
-    time++;
-    timerEl.textContent = `Time: ${time}s`;
-  }, 1000);
-  document.getElementById("bgMusic").volume = 0.5;
-  document.getElementById("bgMusic").play().catch(() => {});
-}
-
-function submitScore() {
-  const name = document.getElementById("nickname").value || "Anon";
-  leaderboard.push({ name, time });
-  leaderboard.sort((a, b) => a.time - b.time);
-  leaderboard = leaderboard.slice(0, 3);
-  scoresEl.innerHTML = leaderboard.map(e => `${e.name}: ${e.time}s`).join("<br>");
-  window.location.href = "home.html";
+function loadLeaderboard() {
+  fetch(API)
+    .then(res => res.json())
+    .then(data => {
+      leaderboardDiv.innerHTML = "<strong>Top Runners:</strong><br>" + data.map(
+        (entry, i) => `${i + 1}. ${entry.nickname}: ${entry.time}s`
+      ).join("<br>");
+    });
 }
 
 document.addEventListener("keydown", e => {
-  if (document.getElementById("mazeWrapper").style.display === "none") return;
+  if (mazeEl.style.display === "none") return;
   if (e.key === "ArrowUp") movePlayer(0, -1);
   if (e.key === "ArrowDown") movePlayer(0, 1);
   if (e.key === "ArrowLeft") movePlayer(-1, 0);
   if (e.key === "ArrowRight") movePlayer(1, 0);
 });
 
-startScreen.onclick = startGame;
+startScreen.onclick = () => {
+  startScreen.style.display = "none";
+  mazeEl.style.display = "flex";
+  generateMaze();
+  drawMaze();
+  startTime = Date.now();
+  const music = document.getElementById("bgMusic");
+  music.volume = 0.5;
+  music.play().catch(() => {});
+  loadLeaderboard();
+};
 </script>
 </body>
 </html>
