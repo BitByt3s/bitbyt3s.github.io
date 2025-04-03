@@ -11,7 +11,8 @@
       background-color: black;
       color: #00ff00;
       font-family: monospace;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     canvas {
@@ -22,13 +23,14 @@
     }
 
     #cipherGate {
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
       z-index: 1;
+      padding: 40px 20px;
     }
 
     #cipherGate h1 {
@@ -55,6 +57,16 @@
       color: #00ff00;
       border: 1px solid #00ff00;
       cursor: pointer;
+    }
+
+    #decoderBox {
+      margin-top: 30px;
+      padding: 10px;
+      border: 1px solid #00ff00;
+      background: rgba(0,0,0,0.6);
+      color: #00ff00;
+      font-size: 14px;
+      max-width: 90%;
     }
 
     #loaderOverlay {
@@ -104,6 +116,20 @@
   <p>Decrypt the phrase above to proceed:</p>
   <input type="text" id="cipherInput" placeholder="Enter decrypted phrase..." />
   <button onclick="validateCipher()">Submit</button>
+
+  <!-- ROT13 Decoder Box -->
+  <div id="decoderBox">
+    <strong>ROT13 Decoder:</strong><br><br>
+    <code>
+      A ↔ N &nbsp;&nbsp; B ↔ O &nbsp;&nbsp; C ↔ P &nbsp;&nbsp; D ↔ Q &nbsp;&nbsp; E ↔ R<br>
+      F ↔ S &nbsp;&nbsp; G ↔ T &nbsp;&nbsp; H ↔ U &nbsp;&nbsp; I ↔ V &nbsp;&nbsp; J ↔ W<br>
+      K ↔ X &nbsp;&nbsp; L ↔ Y &nbsp;&nbsp; M ↔ Z<br><br>
+      N ↔ A &nbsp;&nbsp; O ↔ B &nbsp;&nbsp; P ↔ C &nbsp;&nbsp; Q ↔ D &nbsp;&nbsp; R ↔ E<br>
+      S ↔ F &nbsp;&nbsp; T ↔ G &nbsp;&nbsp; U ↔ H &nbsp;&nbsp; V ↔ I &nbsp;&nbsp; W ↔ J<br>
+      X ↔ K &nbsp;&nbsp; Y ↔ L &nbsp;&nbsp; Z ↔ M
+    </code><br><br>
+    <span style="opacity: 0.6;">Hint: you may wanna write this down.</span>
+  </div>
 </div>
 
 <div id="loaderOverlay">
@@ -112,7 +138,7 @@
 </div>
 
 <script>
-// Glitch-to-cipher animation
+// Cipher animation
 window.onload = () => {
   const finalCipher = "Pelcgvp Pbzvpf";
   const glitchChars = "!@#$%^&*()_+=<>?~";
@@ -135,7 +161,7 @@ window.onload = () => {
   }, 100);
 };
 
-// Cipher validation → send to MAZE
+// Cipher validation → go to maze
 function validateCipher() {
   const input = document.getElementById("cipherInput").value.trim().toLowerCase();
   if (input === "cryptic comics") {
@@ -145,7 +171,7 @@ function validateCipher() {
   }
 }
 
-// Loader and redirect to maze.html
+// Loader with progress bar
 function launchLoader() {
   document.getElementById("cipherGate").style.display = "none";
   const overlay = document.getElementById("loaderOverlay");
@@ -188,12 +214,11 @@ function drawMatrix() {
     drops[i]++;
   }
 }
-
 window.addEventListener("resize", initMatrix);
 initMatrix();
 setInterval(drawMatrix, 50);
 
-// Music autoplay
+// Music autoplay fallback
 window.addEventListener("load", () => {
   const music = document.getElementById("gateMusic");
   if (music) {
