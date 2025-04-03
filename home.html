@@ -3,17 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <title>bitbyt3s // Home</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow-x: hidden;
       overflow-y: auto;
+    }
+
+    body {
       background-color: black;
       color: #00ff00;
       font-family: monospace;
       text-align: center;
+      padding: 30px;
     }
 
     canvas {
@@ -48,7 +51,7 @@
       padding: 10px;
     }
 
-    h1 {
+    h1, h2 {
       animation: glitch 1s infinite;
     }
 
@@ -71,6 +74,24 @@
     }
 
     .logo-footer:hover {
+      opacity: 1;
+    }
+
+    #accessNodeLink {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      opacity: 0.05;
+      z-index: 10000;
+    }
+
+    #accessNodeLink a {
+      color: #00ff00;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    #accessNodeLink:hover {
       opacity: 1;
     }
 
@@ -105,112 +126,182 @@
       height: 100%;
       background: #00ff00;
     }
-
-    .hidden-glitch {
-      color: red;
-      opacity: 0.1;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    .hidden-glitch:hover {
-      opacity: 1;
-      text-shadow: 0 0 5px red;
-    }
   </style>
 </head>
 <body>
 
-<canvas id="matrixCanvas"></canvas>
+  <canvas id="matrixCanvas"></canvas>
 
-<div id="terminalOverlay">
-  <pre id="terminalText">[ access sequence... ]</pre>
-  <div id="progressBar"><div id="barFill"></div></div>
-</div>
+  <!-- Terminal Overlay -->
+  <div id="terminalOverlay">
+    <pre id="terminalText">[ booting access node... ]</pre>
+    <div id="progressBar"><div id="barFill"></div></div>
+  </div>
 
-<header>
-  <h1>> bitbyt3s // welcome</h1>
-  <p>Decrypt. Decode. Discover.</p>
-</header>
+  <!-- Audio -->
+  <audio id="bootSound" src="sounds/boot.mp3" preload="auto"></audio>
+  <audio id="typeSound" src="sounds/typing.mp3" preload="auto"></audio>
 
-<nav>
-  <a onclick="navigateWithLoader('comics.html', ['[ archive loading... ]','[ PASSWORD: rebellion ]'])">Comics</a>
-  <a onclick="navigateWithLoader('about.html', ['[ accessing legacy logs... ]','[ PASSWORD: legacyaccess ]'])">About</a>
-</nav>
+  <header>
+    <h1>> bitbyt3s // hacker comics archive</h1>
+    <p>Welcome to the underground comic drop zone.</p>
+  </header>
 
-<div class="terminal-box">
-  <p>Use the links above to explore the underground.</p>
-  <span class="hidden-glitch" onclick="navigateWithLoader('hexmap.html', ['[ anomaly located... ]','[ unlocking map node... ]'])">x</span>
-</div>
+  <nav>
+    <a onclick="navigateWithLoader('comics.html', ['[ loading comics... ]', '[ archive unlocked... ]', '[ PASSWORD: rebellion ]'])">Comics</a>
+    <a onclick="navigateWithLoader('about.html', ['[ routing legacy path... ]', '[ validating identity... ]', '[ PASSWORD: legacyaccess ]'])">About</a>
+  </nav>
 
-<footer>
-  <p>// site by bitbyt3s | coded in the shadows</p>
-</footer>
+  <div class="terminal-box">
+    <p>Use the tabs above to explore issues and lore. This is the main zone. Expect more soon.</p>
+    <div style="margin-top: 60px; font-size:14px;">
+      >> access method required  
+      <br><span style="opacity:0.6;">// hint: control the shift of history</span>
+    </div>
+  </div>
 
-<div class="logo-footer">
-  <img src="assets/logo.png" alt="bitbyt3s logo" />
-</div>
+  <footer>
+    <p>// site by bitbyt3s | coded in the shadows</p>
+  </footer>
 
-<script>
-const canvas = document.getElementById("matrixCanvas");
-const ctx = canvas.getContext("2d");
-canvas.height = window.innerHeight;
-canvas.width = window.innerWidth;
-const letters = "01";
-const fontSize = 16;
-const columns = canvas.width / fontSize;
-const drops = Array.from({ length: columns }).fill(1);
+  <!-- Hidden Puzzle Button -->
+  <div id="accessNodeLink">
+    <a href="#" onclick="navigateWithLoader('puzzle.html', ['[ riddle engine booting... ]', '[ access check... ]', '[ PASSWORD: rzarl ]'])">[ access node ]</a>
+  </div>
 
-function drawMatrix() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#0F0";
-  ctx.font = fontSize + "px monospace";
-  for (let i = 0; i < drops.length; i++) {
-    const text = letters.charAt(Math.floor(Math.random() * letters.length));
-    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-      drops[i] = 0;
+  <!-- Logo Footer -->
+  <div class="logo-footer">
+    <img src="assets/logo.png" alt="bitbyt3s logo" />
+  </div>
+
+  <script>
+    // Matrix background
+    const canvas = document.getElementById("matrixCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    const letters = "01";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const drops = Array.from({ length: columns }).fill(1);
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#0F0";
+      ctx.font = fontSize + "px monospace";
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
     }
-    drops[i]++;
-  }
-}
-setInterval(drawMatrix, 50);
-window.onresize = () => {
-  canvas.height = window.innerHeight;
-  canvas.width = window.innerWidth;
-};
 
-function navigateWithLoader(destination, messages) {
-  const overlay = document.getElementById("terminalOverlay");
-  const terminalText = document.getElementById("terminalText");
-  const barFill = document.getElementById("barFill");
+    setInterval(drawMatrix, 50);
 
-  overlay.style.display = "flex";
-  terminalText.textContent = "[ terminal online... ]";
+    window.onresize = () => {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+    };
 
-  let msgIndex = 0;
-  const msgInterval = setInterval(() => {
-    if (msgIndex < messages.length) {
-      terminalText.textContent += "\n" + messages[msgIndex];
-      msgIndex++;
+    window.onload = () => {
+      const bootSound = document.getElementById("bootSound");
+      if (bootSound) bootSound.play().catch(() => {});
+    };
+
+    function navigateWithLoader(destination, messages) {
+      const overlay = document.getElementById("terminalOverlay");
+      const terminalText = document.getElementById("terminalText");
+      const barFill = document.getElementById("barFill");
+      const typeSound = document.getElementById("typeSound");
+
+      if (typeSound) typeSound.play().catch(() => {});
+      overlay.style.display = "flex";
+      terminalText.textContent = "[ accessing terminal... ]";
+
+      let msgIndex = 0;
+      const msgInterval = setInterval(() => {
+        if (msgIndex < messages.length) {
+          terminalText.textContent += "\n" + messages[msgIndex];
+          msgIndex++;
+        }
+      }, 800);
+
+      let progress = 0;
+      const barInterval = setInterval(() => {
+        progress += 2;
+        barFill.style.width = progress + "%";
+        if (progress >= 100) {
+          clearInterval(barInterval);
+          clearInterval(msgInterval);
+          setTimeout(() => {
+            window.location.href = destination;
+          }, 500);
+        }
+      }, 100);
     }
-  }, 800);
 
-  let progress = 0;
-  const barInterval = setInterval(() => {
-    progress += 2;
-    barFill.style.width = progress + "%";
-    if (progress >= 100) {
-      clearInterval(barInterval);
-      clearInterval(msgInterval);
-      setTimeout(() => {
-        window.location.href = destination;
-      }, 500);
-    }
-  }, 100);
-}
-</script>
+    // Ctrl+Shift+H → secret.html
+    let loadingTriggered = false;
+    document.addEventListener("keydown", function (e) {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "h" && !loadingTriggered) {
+        e.preventDefault();
+        loadingTriggered = true;
 
+        const overlay = document.getElementById("terminalOverlay");
+        const terminalText = document.getElementById("terminalText");
+        const barFill = document.getElementById("barFill");
+
+        overlay.style.display = "flex";
+        terminalText.textContent = "[ booting access node... ]";
+
+        let progress = 0;
+        const messages = [
+          "[ establishing encrypted tunnel... ]",
+          "[ fingerprint confirmed ]",
+          "[ PASSWORD: xnengrpbcu ]",
+          "[ unlocking next layer... ]"
+        ];
+
+        let msgIndex = 0;
+        let messageTimer = setInterval(() => {
+          if (msgIndex < messages.length) {
+            terminalText.textContent += "\n" + messages[msgIndex];
+            msgIndex++;
+          }
+        }, 900);
+
+        let barInterval = setInterval(() => {
+          progress += 2;
+          barFill.style.width = progress + "%";
+          if (progress >= 100) {
+            clearInterval(barInterval);
+            clearInterval(messageTimer);
+            setTimeout(() => {
+              const userPass = prompt("Enter access password:");
+              if (userPass && userPass.toLowerCase() === "karatechop") {
+                window.location.href = "secret.html";
+              } else {
+                alert("❌ Access Denied.");
+                overlay.style.display = "none";
+                barFill.style.width = "0%";
+                terminalText.textContent = "[ booting access node... ]";
+                loadingTriggered = false;
+              }
+            }, 1000);
+          }
+        }, 100);
+      }
+
+      // Ctrl+Shift+E shortcut to puzzle_email.html
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'e') {
+        e.preventDefault();
+        navigateWithLoader('puzzle_email.html', ['[ loading mail route... ]', '[ captcha bypassed... ]', '[ PASSWORD: rznvyneqerff ]']);
+      }
+    });
+  </script>
 </body>
 </html>
