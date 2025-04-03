@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>bitbyt3s // Entry Gate</title>
+  <title>bitbyt3s // Access Gate</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
@@ -11,28 +11,24 @@
       background-color: black;
       color: #00ff00;
       font-family: monospace;
-      overflow-x: hidden;
-      overflow-y: auto;
-      position: relative;
+      overflow: hidden;
     }
 
     canvas {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
       z-index: -1;
     }
 
     #cipherGate {
-      min-height: 100vh;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding-top: 80px;
+      z-index: 1;
     }
 
     #cipherGate h1 {
@@ -94,106 +90,20 @@
       20%, 60% { text-shadow: -2px 0 2px #00ff00; }
       40%, 80% { text-shadow: 2px 0 4px #00ff00; }
     }
-
-    .rot13-box {
-      border: 1px solid #00ff00;
-      padding: 20px;
-      max-width: 600px;
-      margin: 30px auto;
-      background-color: rgba(0, 0, 0, 0.8);
-      text-align: center;
-      display: none;
-      opacity: 0;
-      transition: opacity 1s ease;
-    }
-
-    .rot13-box.revealed {
-      display: block;
-      opacity: 1;
-    }
-
-    .rot13-box input {
-      width: 80%;
-      padding: 10px;
-      background: black;
-      border: 1px solid #00ff00;
-      color: #00ff00;
-      font-family: monospace;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-
-    .rot13-box button {
-      margin-top: 10px;
-      padding: 8px 16px;
-      font-family: monospace;
-      background: black;
-      color: #00ff00;
-      border: 1px solid #00ff00;
-      cursor: pointer;
-    }
-
-    #rot13Output {
-      margin-top: 15px;
-      font-weight: bold;
-      font-size: 18px;
-    }
-
-    #easterEgg {
-      font-size: 12px;
-      opacity: 0.05;
-      margin-top: 20px;
-      cursor: pointer;
-      transition: opacity 0.3s ease;
-    }
-
-    #easterEgg:hover {
-      opacity: 1;
-      text-shadow: 0 0 10px #00ff00;
-    }
-
-    #bonusOverlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: black;
-      color: #00ff00;
-      font-family: monospace;
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      text-align: center;
-    }
-
-    #bonusOverlay #bonusMessage {
-      font-size: 24px;
-      animation: glitch 1.5s infinite;
-    }
   </style>
 </head>
 <body>
 
 <canvas id="matrixCanvas"></canvas>
 
-<audio id="loopMusic" src="sounds/intro.mp3" autoplay loop></audio>
+<!-- Background Music -->
+<audio id="gateMusic" src="sounds/intro.mp3" preload="auto" loop></audio>
 
 <div id="cipherGate">
   <h1 id="glitchCipher">#@!%$@!@^*(&%</h1>
   <p>Decrypt the phrase above to proceed:</p>
   <input type="text" id="cipherInput" placeholder="Enter decrypted phrase..." />
   <button onclick="validateCipher()">Submit</button>
-
-  <div id="easterEgg" onclick="revealDecoder()">[ decryptor patch: cracked ]</div>
-
-  <div class="rot13-box" id="rot13Decoder">
-    <h2>> ROT13 Decoder</h2>
-    <p>Use this tool to decode encrypted messages found on the system.</p>
-    <input type="text" id="rot13Input" placeholder="Enter ROT13-encoded text..." />
-    <button onclick="decodeROT13()">Decode</button>
-    <p id="rot13Output"></p>
-  </div>
 </div>
 
 <div id="loaderOverlay">
@@ -201,11 +111,8 @@
   <div id="progressBar"><div id="barFill"></div></div>
 </div>
 
-<div id="bonusOverlay">
-  <div id="bonusMessage"></div>
-</div>
-
 <script>
+// Glitch-to-cipher animation
 window.onload = () => {
   const finalCipher = "Pelcgvp Pbzvpf";
   const glitchChars = "!@#$%^&*()_+=<>?~";
@@ -217,7 +124,8 @@ window.onload = () => {
     if (i < finalCipher.length) {
       revealed += finalCipher[i];
       const remaining = Array.from({ length: finalCipher.length - i - 1 })
-        .map(() => glitchChars[Math.floor(Math.random() * glitchChars.length)]).join("");
+        .map(() => glitchChars[Math.floor(Math.random() * glitchChars.length)])
+        .join("");
       el.textContent = revealed + remaining;
       i++;
     } else {
@@ -227,6 +135,7 @@ window.onload = () => {
   }, 100);
 };
 
+// Cipher validation
 function validateCipher() {
   const input = document.getElementById("cipherInput").value.trim().toLowerCase();
   if (input === "cryptic comics") {
@@ -236,6 +145,7 @@ function validateCipher() {
   }
 }
 
+// Loader and redirect
 function launchLoader() {
   document.getElementById("cipherGate").style.display = "none";
   const overlay = document.getElementById("loaderOverlay");
@@ -252,82 +162,48 @@ function launchLoader() {
   }, 80);
 }
 
-function revealDecoder() {
-  document.getElementById("rot13Decoder").classList.add("revealed");
-}
-
-function decodeROT13() {
-  const input = document.getElementById("rot13Input").value;
-  const output = input.replace(/[a-zA-Z]/g, function (char) {
-    const base = char <= 'Z' ? 65 : 97;
-    return String.fromCharCode(((char.charCodeAt(0) - base + 13) % 26) + base);
-  });
-  document.getElementById("rot13Output").textContent = output;
-}
-
-// Matrix + red leaks
+// Matrix background
 const canvas = document.getElementById("matrixCanvas");
 const ctx = canvas.getContext("2d");
-
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-const fontSize = 16;
-let drops = Array(Math.floor(window.innerWidth / fontSize)).fill(1);
 const letters = "01";
-const passwordLetters = "crypticcomics".split("");
-const revealedLetters = new Set();
-let bonusTriggered = false;
+const fontSize = 16;
+let drops;
+
+function initMatrix() {
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+  const columns = canvas.width / fontSize;
+  drops = Array.from({ length: columns }).fill(1);
+}
 
 function drawMatrix() {
   ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#0F0";
   ctx.font = fontSize + "px monospace";
-
   for (let i = 0; i < drops.length; i++) {
-    let char;
-    let useRed = false;
-
-    if (Math.random() < 0.005) {
-      char = passwordLetters[Math.floor(Math.random() * passwordLetters.length)];
-      useRed = true;
-      revealedLetters.add(char);
-    } else {
-      char = letters.charAt(Math.floor(Math.random() * letters.length));
-    }
-
-    ctx.fillStyle = useRed ? "#ff0000" : "#00ff00";
-    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
-
-    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-      drops[i] = 0;
-    }
+    const text = letters.charAt(Math.floor(Math.random() * letters.length));
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
     drops[i]++;
   }
-
-  if (!bonusTriggered && passwordLetters.every(l => revealedLetters.has(l))) {
-    triggerBonusOverlay();
-    bonusTriggered = true;
-  }
 }
+
+window.addEventListener("resize", initMatrix);
+initMatrix();
 setInterval(drawMatrix, 50);
 
-function triggerBonusOverlay() {
-  const overlay = document.getElementById("bonusOverlay");
-  const message = document.getElementById("bonusMessage");
-  overlay.style.display = "flex";
-  message.innerText = "> ACCESS SEQUENCE RECOGNIZED\n> WELCOME, DECRYPTOR";
-
-  setTimeout(() => {
-    overlay.style.transition = "opacity 2s ease";
-    overlay.style.opacity = 0;
-    setTimeout(() => overlay.remove(), 2000);
-  }, 4000);
-}
+// Music autoplay (with fallback)
+window.addEventListener("load", () => {
+  const music = document.getElementById("gateMusic");
+  if (music) {
+    music.volume = 0.6;
+    music.play().catch(() => {
+      console.log("Autoplay blocked. Waiting for user interaction.");
+    });
+  }
+});
 </script>
+
 </body>
 </html>
